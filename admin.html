@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOSI ANIME — Admin Panel</title>
+<style>
+  :root{--bg:#0b0b14;--bg2:#12121f;--card:#181829;--line:#26263d;--text:#ecebff;--muted:#9a99b8;--pink:#ff3d81;--purple:#8b5cf6;--grad:linear-gradient(135deg,#ff3d81,#8b5cf6)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;background:var(--bg);color:var(--text);padding:30px 4%}
+  h1{font-size:1.6rem;margin-bottom:4px} h1 span{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font-size:1.15rem;margin:30px 0 12px}
+  p.muted,.muted{color:var(--muted);font-size:.88rem}
+  input,select{background:var(--card);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:10px;font-size:.9rem;outline:none}
+  input:focus{border-color:var(--pink)}
+  button{border:none;cursor:pointer;font-weight:700;border-radius:10px;padding:9px 16px;font-size:.85rem}
+  .pri{background:var(--grad);color:#fff}.ghost{background:var(--card);color:var(--text);border:1px solid var(--line)}
+  .ok{background:#10b981;color:#03140d}.bad{background:#ef4444;color:#fff}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  .stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-top:20px}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .stat b{font-size:1.6rem;display:block}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:14px;overflow:hidden;font-size:.85rem}
+  th,td{padding:10px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;background:var(--bg2)}
+  td a{color:var(--pink);word-break:break-all}
+  .tag{padding:2px 8px;border-radius:6px;font-size:.72rem;font-weight:800}
+  .tag.pending{background:#f59e0b;color:#1a1000}.tag.approved{background:#10b981;color:#03140d}.tag.rejected{background:#ef4444;color:#fff}
+  .thumb{width:36px;height:52px;object-fit:cover;border-radius:6px;background:var(--bg)}
+  .find{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+  .find div{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px;font-size:.8rem;cursor:pointer}
+  .find div:hover{border-color:var(--pink)}
+  .find img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;margin-bottom:6px}
+  #app{display:none}
+  .yt-box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:.9rem;line-height:1.6}
+  .yt-box b.on{color:#10b981}.yt-box b.off{color:#f59e0b}.yt-box .err{color:#f87171}
+  .help{margin-top:12px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px 16px;font-size:.88rem}
+  .help summary{cursor:pointer;font-weight:700}
+  .help ol{margin:10px 0 0 20px;line-height:1.8;color:#c9c8e3}
+  .help a{color:var(--pink)}
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--pink);padding:10px 18px;border-radius:10px;display:none}
+</style>
+</head>
+<body>
+<h1>🛠 <span>MOSI ANIME</span> Admin Panel</h1>
+<p class="muted">Review donated videos, approve them and take anime out of maintenance. <a href="/" style="color:var(--pink)">← Back to site</a></p>
+
+<div class="row" id="login">
+  <input type="password" id="key" placeholder="Admin key (default: mosi-admin)">
+  <button class="pri" id="loginBtn">Unlock</button>
+  <span class="muted" id="loginMsg"></span>
+</div>
+
+<div id="app">
+  <div class="stats" id="stats"></div>
+
+  <h2>▶ Auto-play free official episodes</h2>
+  <div class="yt-box" id="ytBox"></div>
+  <div class="row">
+    <input id="ytKey" type="password" placeholder="Paste your YouTube Data API v3 key" style="flex:1;min-width:260px">
+    <button class="pri" id="ytSave">Save key</button>
+    <button class="ghost" id="ytReindex">Refresh episode list</button>
+  </div>
+  <details class="help"><summary>How do I get a free YouTube API key? (5 minutes)</summary>
+    <ol>
+      <li>Open <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a> and sign in with Google.</li>
+      <li>Create a project (top bar → <b>New Project</b> → name it "MOSI ANIME").</li>
+      <li>Go to <b>APIs &amp; Services → Library</b>, search for <b>YouTube Data API v3</b> and click <b>Enable</b>.</li>
+      <li>Go to <b>APIs &amp; Services → Credentials → Create credentials → API key</b>.</li>
+      <li>Click the key → <b>API restrictions</b> → restrict it to <b>YouTube Data API v3</b> → Save.</li>
+      <li>Copy the key, paste it above and click <b>Save key</b>. It's free (10,000 units a day), and MOSI caches results so that's plenty.</li>
+    </ol>
+  </details>
+
+  <h2>🎬 Donated videos</h2>
+  <table><thead><tr><th>Anime</th><th>Episodes</th><th>Video</th><th>From</th><th>Status</th><th>Action</th></tr></thead><tbody id="contribs"></tbody></table>
+
+  <h2>▶ Available anime (uploaded library)</h2>
+  <table><thead><tr><th></th><th>AniList ID</th><th>Title</th><th>Episodes</th><th></th></tr></thead><tbody id="lib"></tbody></table>
+
+  <h2>➕ Add a video yourself</h2>
+  <p class="muted">Search for an anime to get its AniList ID, then paste a video link (YouTube, Google Drive, .mp4 or /uploads/file.mp4).</p>
+  <div class="row"><input id="findQ" placeholder="Search anime…" style="flex:1;min-width:220px"><button class="ghost" id="findBtn">Find</button></div>
+  <div class="find" id="findRes"></div>
+  <div class="row">
+    <input id="addId" placeholder="AniList ID" style="width:120px">
+    <input id="addTitle" placeholder="Title" style="flex:1;min-width:160px">
+    <input id="addEp" placeholder="Episode" style="width:100px">
+    <input id="addSrc" placeholder="Video link" style="flex:2;min-width:220px">
+    <input id="addImg" type="hidden">
+    <button class="pri" id="addBtn">Add episode</button>
+  </div>
+
+  <h2>🙋 Most requested</h2>
+  <table><thead><tr><th></th><th>Anime</th><th>Requests</th></tr></thead><tbody id="reqs"></tbody></table>
+
+  <h2>💝 Donations (marked "I've donated")</h2>
+  <table><thead><tr><th>Name</th><th>Amount</th><th>For</th><th>Date</th></tr></thead><tbody id="dons"></tbody></table>
+
+  <h2>🔔 Upload alert sign-ups</h2>
+  <table><thead><tr><th>Email</th><th>Anime</th><th>Date</th></tr></thead><tbody id="notif"></tbody></table>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const date = t => t ? new Date(t*1000).toLocaleString("en-IN") : "";
+let KEY = sessionStorage.getItem("mosi_key") || "";
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(t._h);t._h=setTimeout(()=>t.style.display="none",2500)}
+async function call(path, body){
+  const r = await fetch("/api/admin/" + path, body ? {method:"POST", headers:{"Content-Type":"application/json","X-Admin-Key":KEY}, body:JSON.stringify(body)} : {headers:{"X-Admin-Key":KEY}});
+  const j = await r.json(); if (!r.ok) throw new Error(j.error || r.status); return j;
+}
+async function load(){
+  let d;
+  try { d = await call("all") } catch (e) { $("#loginMsg").textContent = "❌ " + e.message; $("#app").style.display="none"; $("#login").style.display="flex"; return }
+  sessionStorage.setItem("mosi_key", KEY); $("#login").style.display="none"; $("#app").style.display="block";
+  const y = d.youtube || {};
+  const counts = Object.entries(y.counts||{}).map(([k,v])=>`${k}: <b>${v}</b> series`).join(" · ");
+  $("#ytBox").innerHTML = `Status: ${y.hasKey ? '<b class="on">ON</b> (key ' + esc(y.keyHint) + (y.fromEnv ? ", from env" : "") + ")" : '<b class="off">OFF</b>. Add a YouTube API key to auto-play free official episodes'}<br>
+    Channels: ${esc((y.channels||[]).join(", "))}<br>
+    ${y.building ? "⏳ Building episode list… (about a minute)" : y.updated ? "Episode list updated: " + date(y.updated) + "<br>" + counts : y.hasKey ? "Episode list not built yet" : ""}
+    ${y.error ? `<br><span class="err">⚠️ ${esc(y.error)}</span>` : ""}`;
+  if (y.building){ clearTimeout(window._yt); window._yt = setTimeout(load, 4000) }
+  const pending = d.contributions.filter(c=>c.status==="pending").length;
+  const totalReq = Object.values(d.requests).reduce((a,r)=>a+r.count,0);
+  const totalDon = d.donations.reduce((a,x)=>a+(+x.amount||0),0);
+  $("#stats").innerHTML = [["⏳ Pending videos",pending],["▶ Available anime",Object.keys(d.library).length],["🙋 Requests",totalReq],["💝 Donations (₹)",totalDon.toLocaleString("en-IN")],["🔔 Alerts",d.notify.length]]
+    .map(([l,v])=>`<div class="stat"><span class="muted">${l}</span><b>${v}</b></div>`).join("");
+  $("#contribs").innerHTML = d.contributions.slice().reverse().map(c => `<tr>
+    <td><b>${esc(c.anime)}</b><br><span class="muted">ID: ${esc(c.animeId||"—")} · ${esc(c.lang)} · ${esc(c.quality)}</span></td>
+    <td>${esc(c.episodes)}</td>
+    <td>${c.file?`<a href="${esc(c.file)}" target="_blank">📁 ${esc(c.fileName||"file")}</a><br>`:""}${c.link?`<a href="${esc(c.link)}" target="_blank" rel="noopener">🔗 link</a>`:""}${!c.file&&!c.link?'<span class="muted">file not received</span>':""}</td>
+    <td>${esc(c.name)}<br><span class="muted">${esc(c.email)}<br>${date(c.at)}</span></td>
+    <td><span class="tag ${c.status}">${c.status}</span></td>
+    <td>${c.status==="pending"?`<button class="ok" data-approve="${c.id}" data-aid="${esc(c.animeId||"")}">Approve</button> <button class="bad" data-reject="${c.id}">Reject</button>`:""}</td></tr>`).join("") || `<tr><td colspan="6" class="muted">No submissions yet.</td></tr>`;
+  $("#lib").innerHTML = Object.entries(d.library).map(([id,e]) => `<tr>
+    <td><img class="thumb" src="${esc(e.img)}" onerror="this.style.visibility='hidden'"></td><td>${id}</td><td>${esc(e.title)}</td>
+    <td>${(e.episodes||[]).map(x=>`<a href="${esc(x.src)}" target="_blank">EP ${esc(x.ep)}</a>`).join(", ")||'<span class="muted">—</span>'}</td>
+    <td><button class="bad" data-remove="${id}">Remove</button></td></tr>`).join("") || `<tr><td colspan="5" class="muted">No uploaded anime yet. Anime with free official episodes play automatically, and everything else shows Maintenance.</td></tr>`;
+  $("#reqs").innerHTML = Object.entries(d.requests).sort((a,b)=>b[1].count-a[1].count).map(([id,r]) => `<tr><td><img class="thumb" src="${esc(r.img)}" onerror="this.style.visibility='hidden'"></td><td>${esc(r.title)} <span class="muted">(ID ${id})</span></td><td><b>${r.count}</b></td></tr>`).join("") || `<tr><td colspan="3" class="muted">No requests yet.</td></tr>`;
+  $("#dons").innerHTML = d.donations.slice().reverse().map(x => `<tr><td>${esc(x.name)}</td><td>₹${esc(x.amount)}</td><td>${esc(x.anime)}</td><td>${date(x.at)}</td></tr>`).join("") || `<tr><td colspan="4" class="muted">No donations recorded yet.</td></tr>`;
+  $("#notif").innerHTML = d.notify.slice().reverse().map(x => `<tr><td>${esc(x.email)}</td><td>${esc(x.title)}</td><td>${date(x.at)}</td></tr>`).join("") || `<tr><td colspan="3" class="muted">No sign-ups yet.</td></tr>`;
+}
+document.addEventListener("click", async e => {
+  const t = e.target;
+  try {
+    if (t.dataset.approve){
+      let aid = t.dataset.aid;
+      if (!aid){ aid = prompt("This video wasn't sent from a specific anime page. Enter the AniList ID (use 'Add a video yourself' to search):"); if (!aid) return }
+      await call("approve", {cid:t.dataset.approve, animeId:aid}); toast("✅ Approved. The anime is now Available!"); load();
+    }
+    if (t.dataset.reject){ await call("reject", {cid:t.dataset.reject}); toast("Rejected"); load() }
+    if (t.dataset.remove && confirm("Remove from library? It will show Maintenance again.")){ await call("remove", {animeId:t.dataset.remove}); load() }
+    if (t.closest("[data-pick]")){ const p = t.closest("[data-pick]"); $("#addId").value = p.dataset.pick; $("#addTitle").value = p.dataset.title; $("#addImg").value = p.dataset.img; toast("Selected " + p.dataset.title) }
+  } catch (err) { toast("❌ " + err.message) }
+});
+$("#ytSave").onclick = async () => { try { await call("config", {youtubeKey:$("#ytKey").value.trim()}); $("#ytKey").value=""; toast("✅ Saved. Building episode list…"); setTimeout(load, 800) } catch (e) { toast("❌ " + e.message) } };
+$("#ytReindex").onclick = async () => { try { await call("reindex", {}); toast("⏳ Refreshing…"); setTimeout(load, 800) } catch (e) { toast("❌ " + e.message) } };
+$("#loginBtn").onclick = () => { KEY = $("#key").value.trim(); load() };
+$("#key").onkeydown = e => { if (e.key==="Enter") $("#loginBtn").click() };
+$("#findBtn").onclick = async () => {
+  const q = $("#findQ").value.trim(); if (!q) return;
+  try {
+    const r = await fetch("https://graphql.anilist.co", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({query:`query($s:String){Page(perPage:12){media(search:$s,type:ANIME,isAdult:false){id title{romaji english} coverImage{large} seasonYear format}}}`, variables:{s:q}})});
+    const j = await r.json();
+    $("#findRes").innerHTML = j.data.Page.media.map(m => { const t = m.title.english||m.title.romaji;
+      return `<div data-pick="${m.id}" data-title="${esc(t)}" data-img="${esc(m.coverImage.large)}"><img src="${esc(m.coverImage.large)}"><b>${esc(t)}</b><br><span class="muted">ID ${m.id} · ${m.format||""} ${m.seasonYear||""}</span></div>` }).join("");
+  } catch { toast("Couldn't reach AniList") }
+};
+$("#findQ").onkeydown = e => { if (e.key==="Enter") $("#findBtn").click() };
+$("#addBtn").onclick = async () => {
+  try { await call("add", {animeId:$("#addId").value, title:$("#addTitle").value, ep:$("#addEp").value, src:$("#addSrc").value, img:$("#addImg").value});
+    toast("✅ Episode added"); ["#addEp","#addSrc"].forEach(s=>$(s).value=""); load() } catch (err) { toast("❌ " + err.message) }
+};
+if (KEY) load();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# One-click deploy on Render (render.com → New → Blueprint → pick this repo)
+services:
+  - type: web
+    name: mosi-anime
+    runtime: python
+    plan: free
+    buildCommand: echo "No build needed"
+    startCommand: python3 server.py
+    healthCheckPath: /api/status
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.4
+      - key: MOSI_ADMIN_KEY        # random secure admin key (see Render → Environment)
+        generateValue: true
+      - key: YT_API_KEY            # paste your YouTube Data API v3 key here
+        sync: false
+      - key: MOSI_REGION
+        value: IN

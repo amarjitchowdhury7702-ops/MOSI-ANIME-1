@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOSI ANIME — Watch, Track & Discover Anime</title>
+<meta name="description" content="MOSI ANIME - Your home for trending anime, new episodes, schedules and more.">
+<style>
+  :root{
+    --bg:#0b0b14;
+    --bg2:#12121f;
+    --card:#181829;
+    --line:#26263d;
+    --text:#ecebff;
+    --muted:#9a99b8;
+    --pink:#ff3d81;
+    --purple:#8b5cf6;
+    --cyan:#22d3ee;
+    --grad:linear-gradient(135deg,var(--pink),var(--purple));
+    --radius:16px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  img,svg{display:block}
+  .container{width:min(1200px,92%);margin:auto}
+  button{font-family:inherit;cursor:pointer;border:none}
+
+  /* ===== Header ===== */
+  header{position:fixed;top:0;left:0;right:0;z-index:100;transition:.3s}
+  header.scrolled{background:rgba(11,11,20,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:20px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:1.5rem;letter-spacing:1px}
+  .logo-mark{width:40px;height:40px;border-radius:12px;background:var(--grad);display:grid;place-items:center;font-size:1.2rem;box-shadow:0 0 20px rgba(255,61,129,.5)}
+  .logo span.accent{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  nav ul{display:flex;list-style:none;gap:24px}
+  nav a,.btn{white-space:nowrap}
+  nav a{color:var(--muted);font-weight:600;font-size:.95rem;transition:.2s;position:relative}
+  nav a:hover,nav a.active{color:var(--text)}
+  nav a.active::after{content:"";position:absolute;left:0;right:0;bottom:-6px;height:2px;background:var(--grad);border-radius:2px}
+  .nav-right{display:flex;align-items:center;gap:12px}
+  .search{display:flex;align-items:center;background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:8px 14px;gap:8px}
+  .search input{background:none;border:none;outline:none;color:var(--text);width:170px;font-size:.9rem}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:999px;font-weight:700;font-size:.95rem;transition:.25s}
+  .btn-primary{background:var(--grad);color:#fff;box-shadow:0 8px 25px rgba(255,61,129,.35)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,61,129,.5)}
+  .btn-ghost{background:rgba(255,255,255,.08);color:var(--text);border:1px solid rgba(255,255,255,.15)}
+  .btn-ghost:hover{background:rgba(255,255,255,.15)}
+  .menu-btn{display:none;background:none;color:var(--text);font-size:1.6rem}
+
+  /* ===== Hero ===== */
+  .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding-top:72px}
+  .hero-bg{position:absolute;inset:0;z-index:-1;transition:background 1s}
+  .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 25%,rgba(11,11,20,.4) 65%,rgba(11,11,20,.2)),linear-gradient(0deg,var(--bg),transparent 40%)}
+  .hero-blur{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(40px) saturate(1.4);opacity:.45;transform:scale(1.2)}
+  .hero .container{position:relative;z-index:1}
+  .hero-poster{position:absolute;right:7%;top:52%;transform:translateY(-50%) rotate(3deg);width:min(360px,30vw);aspect-ratio:2/3;border-radius:22px;overflow:hidden;box-shadow:0 30px 80px rgba(255,61,129,.35),0 0 0 1px rgba(255,255,255,.12);z-index:0;transition:opacity .5s}
+  .hero-poster img{width:100%;height:100%;object-fit:cover}
+  .hero-poster.fade{opacity:0}
+  .hero-content{max-width:600px}
+  .tag{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:rgba(255,61,129,.15);color:var(--pink);font-weight:700;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(255,61,129,.35)}
+  .hero h1{font-size:clamp(2.6rem,6vw,4.6rem);line-height:1.05;margin:18px 0;font-weight:900}
+  .hero h1 .jp{display:block;font-size:.4em;color:var(--muted);font-weight:600;letter-spacing:4px;margin-top:8px}
+  .meta{display:flex;flex-wrap:wrap;gap:16px;color:var(--muted);font-size:.9rem;margin-bottom:16px}
+  .meta b{color:#ffd166}
+  .hero p.desc{color:#c9c8e3;margin-bottom:28px;font-size:1.05rem}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-dots{display:flex;gap:10px;margin-top:40px}
+  .hero-dots button{width:34px;height:5px;border-radius:5px;background:rgba(255,255,255,.2);transition:.3s}
+  .hero-dots button.on{background:var(--grad);width:56px}
+
+  /* ===== Sections ===== */
+  section{padding:80px 0}
+  .sec-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:30px;gap:20px;flex-wrap:wrap}
+  .sec-head h2{font-size:2rem;font-weight:800}
+  .sec-head h2::before{content:"";display:inline-block;width:6px;height:28px;background:var(--grad);border-radius:4px;margin-right:12px;vertical-align:-4px}
+  .sec-head p{color:var(--muted)}
+  .link{color:var(--pink);font-weight:700}
+
+  /* Genre chips */
+  .chips{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+  .chip{padding:8px 18px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted);font-weight:600;font-size:.9rem;transition:.2s}
+  .chip:hover{color:var(--text);border-color:var(--purple)}
+  .chip.on{background:var(--grad);color:#fff;border-color:transparent}
+
+  /* Cards grid */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:22px}
+  .card{background:var(--card);border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);transition:.3s;position:relative}
+  .card:hover{transform:translateY(-8px);border-color:rgba(255,61,129,.5);box-shadow:0 20px 40px rgba(0,0,0,.5)}
+  .poster{aspect-ratio:2/3;position:relative;overflow:hidden;display:grid;place-items:center}
+  .poster img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .5s}
+  .card:hover .poster img{transform:scale(1.08)}
+  .poster::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.65),transparent 45%);z-index:1}
+  .poster .kanji{font-size:4.5rem;font-weight:900;color:rgba(255,255,255,.9);text-shadow:0 6px 30px rgba(0,0,0,.4);font-family:"Yu Gothic","Hiragino Sans","Noto Sans JP",sans-serif;z-index:1}
+  .poster .shape{position:absolute;border-radius:50%;filter:blur(2px);opacity:.5}
+  .poster .badge{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);padding:3px 10px;border-radius:8px;font-size:.75rem;font-weight:700;z-index:2}
+  .poster .ep{position:absolute;bottom:10px;left:10px;background:var(--pink);padding:3px 10px;border-radius:8px;font-size:.75rem;font-weight:800;z-index:2}
+  .fav{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);color:#fff;font-size:1rem;z-index:3;transition:.2s}
+  .fav.on{background:var(--pink)}
+  .play-ov{position:absolute;inset:0;background:rgba(11,11,20,.55);display:grid;place-items:center;opacity:0;transition:.3s;z-index:2}
+  .card:hover .play-ov{opacity:1}
+  .play-ov span{width:58px;height:58px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:1.3rem;box-shadow:0 0 30px rgba(255,61,129,.6)}
+  .card-body{padding:14px}
+  .card-body h3{font-size:1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .card-body small{color:var(--muted);display:flex;justify-content:space-between}
+  .card-body small b{color:#ffd166}
+  .empty{color:var(--muted);text-align:center;padding:40px;display:none}
+
+  /* Top 10 */
+  .top-wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:30px}
+  .top-list{display:flex;flex-direction:column;gap:12px}
+  .top-item{display:flex;align-items:center;gap:16px;background:var(--card);border:1px solid var(--line);padding:12px;border-radius:14px;transition:.25s}
+  .top-item:hover{border-color:var(--purple);transform:translateX(6px)}
+  .rank{font-size:2rem;font-weight:900;width:46px;text-align:center;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .thumb{width:54px;height:72px;border-radius:10px;overflow:hidden;flex-shrink:0}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .top-item h4{font-size:1rem}
+  .top-item p{color:var(--muted);font-size:.85rem}
+  .feature{border-radius:20px;overflow:hidden;position:relative;min-height:420px;display:flex;align-items:flex-end;padding:30px;background:#1e1b4b url("img/yourname.jpg") center/cover no-repeat}
+    .feature::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.8),transparent 60%)}
+  .feature-in{position:relative;z-index:1}
+  .feature h3{font-size:2rem;margin:10px 0}
+  .feature p{color:#ddd;margin-bottom:18px}
+
+  /* Schedule */
+  .days{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;margin-bottom:24px}
+  .day{min-width:92px;padding:12px;border-radius:14px;background:var(--card);border:1px solid var(--line);text-align:center;color:var(--muted);font-weight:700}
+  .day small{display:block;font-weight:500;font-size:.75rem}
+  .day.on{background:var(--grad);color:#fff;border-color:transparent}
+  .sched{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .slot{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 18px}
+  .slot time{font-weight:800;color:var(--cyan);min-width:56px}
+  .slot h4{font-size:.95rem}
+  .slot p{color:var(--muted);font-size:.8rem}
+
+  /* Korin spotlight */
+  .korin{display:grid;grid-template-columns:380px 1fr;gap:36px;align-items:start}
+  .k-card{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;position:sticky;top:96px}
+  .k-card .k-img{position:relative}
+  .k-card .k-img img{width:100%;aspect-ratio:4/3;object-fit:cover}
+  .k-card .k-img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,var(--card),transparent 50%)}
+  .k-name{padding:0 22px 22px;margin-top:-40px;position:relative;z-index:1}
+  .k-name h3{font-size:2rem;line-height:1.1}
+  .k-name .jp{color:var(--pink);font-weight:700;letter-spacing:2px}
+  .k-table{width:100%;border-collapse:collapse;margin-top:14px;font-size:.9rem}
+  .k-table td{padding:8px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  .k-table td:first-child{color:var(--muted);width:42%}
+  .k-quote{background:linear-gradient(135deg,rgba(255,61,129,.15),rgba(139,92,246,.15));border-left:4px solid var(--pink);padding:18px 22px;border-radius:12px;font-style:italic;font-size:1.1rem;margin-bottom:26px}
+  .k-quote small{display:block;font-style:normal;color:var(--muted);margin-top:6px;font-size:.85rem}
+  .k-block{margin-bottom:30px}
+  .k-block h4{font-size:1.25rem;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .k-block > p{color:#c9c8e3;margin-bottom:10px}
+  .abil{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+  .abil div{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;transition:.25s}
+  .abil div:hover{border-color:var(--pink);transform:translateY(-4px)}
+  .abil b{display:block;margin-bottom:4px}
+  .abil span{color:var(--muted);font-size:.85rem}
+  .timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:22px}
+  .timeline li{list-style:none;position:relative;margin-bottom:16px}
+  .timeline li::before{content:"";position:absolute;left:-30px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--grad);box-shadow:0 0 12px rgba(255,61,129,.6)}
+  .timeline b{color:var(--cyan)}
+  .timeline p{color:var(--muted);font-size:.9rem}
+  .trivia{display:grid;gap:10px}
+  .trivia li{list-style:none;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 16px;color:#c9c8e3}
+  .trivia li::before{content:"🐾 ";}
+  .sources{color:var(--muted);font-size:.8rem}
+  .sources a{color:var(--pink)}
+  @media (max-width:960px){.korin{grid-template-columns:1fr}.k-card{position:static}}
+
+  /* Stats / CTA */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;text-align:center}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px 20px}
+  .stat h3{font-size:2.4rem;font-weight:900;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat p{color:var(--muted)}
+  .cta{background:linear-gradient(135deg,rgba(255,61,129,.18),rgba(139,92,246,.18));border:1px solid rgba(139,92,246,.4);border-radius:24px;padding:50px;text-align:center;position:relative;overflow:hidden}
+  .cta h2{font-size:2.2rem;margin-bottom:10px}
+  .cta p{color:var(--muted);margin-bottom:24px}
+  .cta form{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+  .cta input{padding:13px 20px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--text);width:min(340px,100%);outline:none;font-size:.95rem}
+  .cta input:focus{border-color:var(--pink)}
+
+  /* Footer */
+  footer{border-top:1px solid var(--line);padding:60px 0 30px;background:var(--bg2)}
+  .foot{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:30px;margin-bottom:40px}
+  .foot p{color:var(--muted);margin-top:14px;max-width:320px}
+  .foot h5{font-size:1rem;margin-bottom:14px}
+  .foot ul{list-style:none}
+  .foot li{margin-bottom:8px}
+  .foot li a{color:var(--muted);transition:.2s}
+  .foot li a:hover{color:var(--pink)}
+  .socials{display:flex;gap:10px;margin-top:18px}
+  .socials a{width:40px;height:40px;border-radius:12px;background:var(--card);border:1px solid var(--line);display:grid;place-items:center;transition:.2s}
+  .socials a:hover{background:var(--grad);border-color:transparent}
+  .copy{text-align:center;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:24px}
+
+  /* Toast & modal */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--card);border:1px solid var(--pink);padding:12px 22px;border-radius:12px;z-index:300;transition:.35s;font-weight:600}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);z-index:200;display:none;place-items:center;padding:20px}
+  .modal.show{display:grid}
+  .modal-box{background:var(--bg2);border:1px solid var(--line);border-radius:20px;width:min(720px,100%);overflow:hidden;animation:pop .3s}
+  @keyframes pop{from{transform:scale(.9);opacity:0}}
+  .player{aspect-ratio:16/9;display:grid;place-items:center;position:relative;background-size:cover!important;background-position:center!important}
+  .player .big-play{width:80px;height:80px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-size:2rem;box-shadow:0 0 40px rgba(255,61,129,.6);animation:pulse 2s infinite}
+  @keyframes pulse{50%{box-shadow:0 0 0 18px rgba(255,61,129,0)}}
+  .close{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:1.2rem}
+  .modal-info{padding:22px}
+  .modal-info h3{font-size:1.4rem}
+  .modal-info p{color:var(--muted)}
+
+  /* ===== Status badges (Available / Maintenance) ===== */
+  .status{position:absolute;bottom:10px;right:10px;z-index:2;padding:3px 9px;border-radius:8px;font-size:.7rem;font-weight:800;letter-spacing:.3px}
+  .status.ok{background:#10b981;color:#03140d}
+  .status.mt{background:#f59e0b;color:#1a1000}
+  .status.lg{background:#8b5cf6;color:#fff}
+  .status.inline{position:static;display:inline-block;margin-bottom:8px}
+  .legend{display:flex;flex-wrap:wrap;gap:18px;color:var(--muted);font-size:.85rem;margin:-8px 0 22px}
+  .legend i{font-style:normal;padding:2px 8px;border-radius:6px;font-weight:800;font-size:.72rem;margin-right:6px}
+  .legend .ok{background:#10b981;color:#03140d}.legend .mt{background:#f59e0b;color:#1a1000}.legend .lg{background:#8b5cf6;color:#fff}
+
+  /* ===== Browse all anime ===== */
+  .filters{display:grid;grid-template-columns:2fr repeat(4,1fr) auto;gap:10px;margin-bottom:18px}
+  .filters input,.filters select,.vform input,.vform select,.inline-form input,.amounts input{background:var(--card);border:1px solid var(--line);color:var(--text);padding:11px 14px;border-radius:12px;font-size:.9rem;outline:none;font-family:inherit;width:100%}
+  .filters input:focus,.filters select:focus,.vform input:focus,.vform select:focus,.inline-form input:focus,.amounts input:focus{border-color:var(--pink)}
+  .toggle{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);padding:0 14px;border-radius:12px;font-weight:600;font-size:.88rem;white-space:nowrap;cursor:pointer}
+  .toggle input{accent-color:var(--pink);width:16px;height:16px}
+  .b-foot{text-align:center;margin-top:30px}
+  .b-foot p{color:var(--muted);font-size:.85rem;margin-top:10px}
+  .skel{border-radius:var(--radius);aspect-ratio:2/3.55;background:linear-gradient(90deg,var(--card) 25%,#24243b 50%,var(--card) 75%);background-size:200% 100%;animation:sh 1.2s infinite}
+  @keyframes sh{to{background-position:-200% 0}}
+  .note-off{background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.4);color:#fcd34d;padding:10px 14px;border-radius:12px;font-size:.85rem;margin-bottom:18px;display:none}
+  .note-off.show{display:block}
+
+  /* ===== Modal (shared) ===== */
+  .modal-box{max-height:92vh;overflow-y:auto;position:relative}
+  .modal-box.wide{width:min(820px,100%)}
+  .mt-head{position:relative;background-size:cover;background-position:center;padding:64px 26px 22px}
+  .mt-head .close{top:14px;right:14px}
+  .mt-head-in{display:flex;gap:18px;align-items:flex-end}
+  .mt-head-in img{width:110px;aspect-ratio:2/3;object-fit:cover;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.5);flex-shrink:0;background:var(--card)}
+  .mt-head h3{font-size:1.6rem;line-height:1.2}
+  .mt-head p{color:#c9c8e3;font-size:.9rem}
+  .mt-body{padding:22px 26px 28px}
+  .mt-alert{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.35);border-radius:14px;padding:14px 16px;color:#fde68a;margin-bottom:16px;font-size:.95rem}
+  .mt-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;align-items:center}
+  .inline-form{display:flex;gap:8px;flex:1;min-width:260px}
+  .inline-form .btn{white-space:nowrap}
+  .btn[disabled]{opacity:.7;cursor:default;transform:none!important}
+  .tabs{display:flex;gap:6px;background:var(--bg);padding:5px;border-radius:14px;margin-bottom:18px;border:1px solid var(--line)}
+  .tab{flex:1;padding:11px;border-radius:10px;background:none;color:var(--muted);font-weight:700;font-size:.92rem}
+  .tab.on{background:var(--grad);color:#fff}
+  .pane-sub{color:var(--muted);margin-bottom:14px;font-size:.92rem}
+  .amounts{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px}
+  .amt{padding:11px 6px;border-radius:12px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:800}
+  .amt.on{border-color:var(--pink);background:rgba(255,61,129,.15);color:var(--pink)}
+  .pay-grid{display:grid;grid-template-columns:180px 1fr;gap:20px;align-items:center;margin-bottom:16px}
+  .qr{width:180px;height:180px;border-radius:14px;background:#fff;display:grid;place-items:center;overflow:hidden}
+  .qr img{width:164px;height:164px}
+  .qr .qr-fallback{display:none;color:#333;font-size:.8rem;text-align:center;padding:12px}
+  .qr.noqr img{display:none}.qr.noqr .qr-fallback{display:block}
+  .pay-info{display:flex;flex-direction:column;gap:10px}
+  .pay-info small{color:var(--muted)}
+  .upi{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px dashed var(--purple);border-radius:12px;padding:10px 12px}
+  .upi code{flex:1;font-size:1rem;color:var(--cyan);word-break:break-all}
+  .btn-mini{background:var(--card);color:var(--text);border:1px solid var(--line);padding:6px 12px;border-radius:8px;font-weight:700;font-size:.8rem}
+  .vform{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .vform label{display:flex;flex-direction:column;gap:6px;font-size:.82rem;color:var(--muted);font-weight:600}
+  .vform .full{grid-column:1/-1}
+  .vform .check{flex-direction:row;align-items:flex-start;gap:10px;color:var(--text);font-weight:500;font-size:.88rem}
+  .vform .check input{width:18px;height:18px;accent-color:var(--pink);margin-top:2px;flex-shrink:0}
+  .vform input[type=file]{padding:9px}
+  .vform input[readonly]{opacity:.8}
+  .progress{height:10px;background:var(--bg);border-radius:10px;overflow:hidden;border:1px solid var(--line)}
+  .progress div{height:100%;width:0;background:var(--grad);transition:width .2s}
+  .eps{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .ep-btn{padding:8px 14px;border-radius:10px;background:var(--card);border:1px solid var(--line);color:var(--text);font-weight:700}
+  .ep-btn.on{background:var(--grad);border-color:transparent}
+  .player{overflow:hidden}
+  .player video,.player iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#000}
+  .player .close{z-index:3}
+  .demo-note{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#ddd;font-size:.82rem;padding:0 16px}
+
+  .finding{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;color:#ddd;padding:20px;z-index:1}
+  .spin{width:46px;height:46px;border-radius:50%;border:4px solid rgba(255,255,255,.15);border-top-color:var(--pink);animation:rot 1s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+  #ytHost{position:absolute;inset:0;width:100%;height:100%;border:0;z-index:2}
+  div#ytHost{pointer-events:none}
+  .ep-now{color:var(--pink);font-size:1rem;font-weight:700}
+  .p-ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0 4px}
+  .p-ctrl select{background:var(--card);border:1px solid var(--line);color:var(--text);padding:10px 12px;border-radius:12px;font-family:inherit;max-width:100%;flex:1;min-width:200px}
+  .p-ctrl .btn{padding:9px 16px}
+  .p-ctrl .toggle{padding:9px 14px}
+  .src-one{flex:1;color:var(--muted);font-size:.9rem;min-width:160px}
+  .ep-grid{max-height:170px;overflow-y:auto;padding:2px}
+  .ep-grid .ep-btn{min-width:64px}
+  .credit{color:var(--muted);font-size:.78rem;margin-top:8px}
+  .legal-box{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.4);border-radius:14px;padding:14px 16px;margin:14px 0 16px}
+  .legal-box b{display:block;margin-bottom:4px}
+  .legal-box p{color:var(--muted);font-size:.9rem;margin-bottom:10px}
+  .legal-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .legal-links .btn{padding:8px 16px;font-size:.88rem}
+
+  /* ===== Donate section ===== */
+  .donate-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px}
+  .d-card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;position:relative;overflow:hidden;transition:.3s}
+  .d-card:hover{border-color:rgba(255,61,129,.5);transform:translateY(-4px)}
+  .d-card .ico{font-size:2.4rem}
+  .d-card h3{margin:10px 0 6px;font-size:1.3rem}
+  .d-card p{color:var(--muted);margin-bottom:18px;font-size:.92rem}
+  .req-list{list-style:none;display:flex;flex-direction:column;gap:6px}
+  .req-list li{display:flex;align-items:center;gap:12px;cursor:pointer;padding:6px;border-radius:10px}
+  .req-list li:hover{background:rgba(255,255,255,.05)}
+  .req-list img{width:38px;height:54px;border-radius:8px;object-fit:cover;background:var(--bg);flex-shrink:0}
+  .req-list span{font-weight:600;font-size:.92rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .req-list b{margin-left:auto;color:var(--pink);font-size:.8rem;white-space:nowrap}
+  .req-empty{color:var(--muted);font-size:.9rem}
+
+  @media (max-width:960px){
+    .filters{grid-template-columns:1fr 1fr}
+    .filters #bSearch{grid-column:1/-1}
+    .donate-grid{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .pay-grid{grid-template-columns:1fr;justify-items:center}
+    .amounts{grid-template-columns:repeat(3,1fr)}
+    .vform{grid-template-columns:1fr}
+    .mt-head-in img{width:80px}
+    .mt-head h3{font-size:1.25rem}
+  }
+
+  /* Reveal animation */
+  .reveal{opacity:0;transform:translateY(30px);transition:.7s}
+  .reveal.in{opacity:1;transform:none}
+
+  /* Responsive */
+  @media (max-width:1240px){
+    nav ul{position:fixed;top:72px;left:0;right:0;flex-direction:column;background:var(--bg2);padding:24px;gap:18px;border-bottom:1px solid var(--line);transform:translateY(-150%);transition:.35s}
+    nav ul.open{transform:none}
+    .menu-btn{display:block}
+  }
+  @media (max-width:960px){
+    .search input{width:110px}
+    .top-wrap{grid-template-columns:1fr}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .foot{grid-template-columns:1fr 1fr}
+    .hero-poster{opacity:.25;right:-10%;width:60vw}
+  }
+  @media (max-width:560px){
+    .search{display:none}
+    .nav-right .btn{display:none}
+    .grid{grid-template-columns:repeat(2,1fr);gap:14px}
+    .cta{padding:30px 20px}
+    .foot{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header id="header">
+  <div class="container nav">
+    <a href="#home" class="logo">
+      <div class="logo-mark">桜</div>
+      MOSI<span class="accent">ANIME</span>
+    </a>
+    <nav>
+      <ul id="menu">
+        <li><a href="#home" class="active">Home</a></li>
+        <li><a href="#trending">Trending</a></li>
+        <li><a href="#browse">All Anime</a></li>
+        <li><a href="#top">Top 10</a></li>
+        <li><a href="#schedule">Schedule</a></li>
+        <li><a href="#korin">Korin</a></li>
+        <li><a href="#donate">Donate</a></li>
+      </ul>
+    </nav>
+    <div class="nav-right">
+      <label class="search">
+        <span>🔍</span>
+        <input id="searchInput" type="text" placeholder="Search anime...">
+      </label>
+      <a href="#join" class="btn btn-primary">Sign Up</a>
+      <button class="menu-btn" id="menuBtn" aria-label="Menu">☰</button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="hero-bg" id="heroBg"><img class="hero-blur" id="heroBlur" src="img/frieren.jpg" alt=""></div>
+  <div class="hero-poster" id="heroPoster"><img id="heroImg" src="img/frieren.jpg" alt="Featured anime poster"></div>
+
+  <div class="container">
+    <div class="hero-content">
+      <span class="tag" id="heroTag">🔥 #1 Spotlight</span>
+      <h1 id="heroTitle">Frieren: Beyond Journey's End<span class="jp">葬送のフリーレン</span></h1>
+      <div class="meta" id="heroMeta">
+        <span><b>★ 9.3</b></span><span>TV Series</span><span>28 Episodes</span><span>Fantasy · Adventure</span><span>HD</span>
+      </div>
+      <p class="desc" id="heroDesc">After the party of heroes defeats the Demon King, the elf mage Frieren embarks on a new journey to understand the meaning of time, memories and the people she holds dear.</p>
+      <div class="hero-actions">
+        <button class="btn btn-primary" id="heroWatch" data-open="154587">▶ Watch Now</button>
+        <button class="btn btn-ghost" id="heroFav" data-fav="154587">＋ My List</button>
+      </div>
+      <div class="hero-dots" id="heroDots"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TRENDING ============ -->
+<section id="trending">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Trending Now</h2>
+        <p>The hottest anime everyone is watching this week</p>
+      </div>
+      <a href="#" class="link">View all →</a>
+    </div>
+    <div class="chips reveal" id="chips"></div>
+    <div class="legend">
+      <span><i class="ok">▶ Available</i>Ready to watch</span>
+      <span><i class="lg">🎬 Trailer + Legal</i>Official trailer, plus links to watch the full thing legally</span>
+      <span><i class="mt">🛠 Maintenance</i>Not uploaded yet</span>
+    </div>
+    <div class="grid" id="animeGrid"></div>
+    <p class="empty" id="empty">No anime found. Try another search 🔎</p>
+  </div>
+</section>
+
+<!-- ============ ALL ANIME (live database) ============ -->
+<section id="browse">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <h2>All Anime Library</h2>
+        <p>Search 20,000+ anime: every series, movie, OVA and ONA</p>
+      </div>
+    </div>
+    <div class="note-off" id="offNote">📴 <b>Offline mode:</b> can't reach the anime database right now, so only saved anime are shown. Open the site online to browse every anime.</div>
+    <div class="filters">
+      <input id="bSearch" type="search" placeholder="🔍 Search any anime… (e.g. Naruto, Bleach, Death Note)">
+      <select id="bGenre"><option value="">All genres</option></select>
+      <select id="bFormat">
+        <option value="">All formats</option><option value="TV">TV Series</option><option value="MOVIE">Movie</option>
+        <option value="OVA">OVA</option><option value="ONA">ONA</option><option value="SPECIAL">Special</option><option value="TV_SHORT">TV Short</option>
+      </select>
+      <select id="bStatus">
+        <option value="">All status</option><option value="RELEASING">Airing now</option><option value="FINISHED">Finished</option><option value="NOT_YET_RELEASED">Upcoming</option>
+      </select>
+      <select id="bSort">
+        <option value="POPULARITY_DESC">Most popular</option><option value="SCORE_DESC">Top rated</option><option value="TRENDING_DESC">Trending</option>
+        <option value="START_DATE_DESC">Newest</option><option value="TITLE_ROMAJI">A – Z</option>
+      </select>
+      <label class="toggle"><input type="checkbox" id="bAvail"> Only available</label>
+    </div>
+    <div class="legend">
+      <span><i class="ok">▶ Available</i>Watch full episodes now (free and official)</span>
+      <span><i class="mt">🛠 Maintenance</i>Not uploaded yet. You can request it, donate money or donate video.</span>
+    </div>
+    <div class="grid" id="bGrid"></div>
+    <div class="b-foot">
+      <button class="btn btn-ghost" id="bMore">Load more anime</button>
+      <p id="bInfo"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TOP 10 ============ -->
+<section id="top" style="background:var(--bg2)">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Top 10 This Season</h2>
+        <p>Ranked by the MOSI ANIME community</p>
+      </div>
+    </div>
+    <div class="top-wrap">
+      <div class="feature reveal">
+        <div class="feature-in">
+          <span class="tag">✨ Editor's Pick</span>
+          <h3>Your Name. (Kimi no Na wa)</h3>
+          <p>Two strangers find themselves linked in a bizarre way. A breathtaking story of fate, time and connection.</p>
+          <button class="btn btn-primary" data-open="21519">▶ Watch Movie</button>
+        </div>
+      </div>
+      <div class="top-list reveal" id="topList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SCHEDULE ============ -->
+<section id="schedule">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Release Schedule</h2>
+        <p>Never miss a new episode (times in IST)</p>
+      </div>
+    </div>
+    <div class="days reveal" id="days"></div>
+    <div class="sched reveal" id="sched"></div>
+  </div>
+</section>
+
+<!-- ============ KORIN SPOTLIGHT ============ -->
+<section id="korin" style="background:var(--bg2)">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Character Spotlight: Korin</h2>
+        <p>The legendary "God of Martial Arts" from Dragon Ball</p>
+      </div>
+    </div>
+
+    <div class="korin">
+      <!-- Profile card -->
+      <aside class="k-card reveal">
+        <div class="k-img"><img src="img/korin.jpg" alt="Korin, the white cat martial arts master from Dragon Ball"></div>
+        <div class="k-name">
+          <span class="jp">カリン · KARIN</span>
+          <h3>Korin</h3>
+          <table class="k-table">
+            <tr><td>Species</td><td>Senbyō (仙猫, "Immortal Cat")</td></tr>
+            <tr><td>Age</td><td>800+ years</td></tr>
+            <tr><td>Home</td><td>Top of Korin Tower, just below Kami's Lookout</td></tr>
+            <tr><td>Title</td><td>God of Martial Arts</td></tr>
+            <tr><td>Creator</td><td>Akira Toriyama</td></tr>
+            <tr><td>Series</td><td>Dragon Ball, Z, GT, Super, Daima</td></tr>
+            <tr><td>Students</td><td>Master Roshi, Goku (and others)</td></tr>
+            <tr><td>Japanese voice</td><td>Ichirō Nagai, Naoki Tatsuta, Ken Uo</td></tr>
+            <tr><td>English voice</td><td>Christopher R. Sabat</td></tr>
+          </table>
+        </div>
+      </aside>
+
+      <!-- Research content -->
+      <div>
+        <div class="k-quote reveal">"The cat has a name you know! And it wouldn't hurt for you to show a little respect!"
+          <small>— Korin, Dragon Ball episode "Fight With Piccolo"</small>
+        </div>
+
+        <div class="k-block reveal">
+          <h4>📖 Who is Korin?</h4>
+          <p>Korin (called <b>Karin</b> in Japan) is a wise, white cat who has lived for more than 800 years at the top of the very tall Korin Tower. Fighters around the world know him as the <b>"God of Martial Arts"</b>, so people are often surprised to find that the legend is a small cat with a walking stick.</p>
+          <p>According to the guidebook <i>Daizenshuu 7</i>, Korin came from the Other World and was sent to Earth to help Kami, Earth's guardian. He acts like he doesn't care about the world below his tower, but he always helps when things get serious. He likes playing tricks and testing people, and he's a bit lazy, but underneath he's a kind teacher.</p>
+        </div>
+
+        <div class="k-block reveal">
+          <h4>⚔️ Powers & Abilities</h4>
+          <div class="abil">
+            <div><b>Afterimage Technique</b><span>He moves so fast he leaves copies of himself behind, and he says he invented the move.</span></div>
+            <div><b>Mind Reading</b><span>He read Goku's mind when they first met to check that his heart was pure.</span></div>
+            <div><b>Flight</b><span>He can fly using ki (life energy).</span></div>
+            <div><b>Far-Seeing</b><span>A power of divine beings that lets him watch what happens far below.</span></div>
+            <div><b>Senzu Beans</b><span>He is the only one who grows them. One bean heals any injury and fills you up for about 10 days.</span></div>
+            <div><b>Flying Nimbus</b><span>He controls the source cloud of Goku's Flying Nimbus, and once gave Mercenary Tao a trick Dark Nimbus.</span></div>
+          </div>
+        </div>
+
+        <div class="k-block reveal">
+          <h4>🗼 The Sacred Water Legend</h4>
+          <ul class="timeline">
+            <li><b>Master Roshi</b><p>As a young man, Roshi was the first to climb the tower. It took him <b>3 years</b> to grab the Sacred Water from Korin.</p></li>
+            <li><b>Goku arrives</b><p>Goku climbs the tower to get stronger after Mercenary Tao kills his friend. Korin keeps dodging him and dares him to take the water.</p></li>
+            <li><b>A test of honour</b><p>Goku could have stolen the water while Korin "slept", but he chose to win fairly. Korin was only pretending to sleep, and he was so impressed that he decided to train Goku properly.</p></li>
+            <li><b>The secret</b><p>After <b>3 days</b>, Goku catches the bottle. It turns out the "Sacred Water" is just ordinary tap water. What really made Goku stronger was the training: climbing the tower and chasing Korin.</p></li>
+          </ul>
+        </div>
+
+        <div class="k-block reveal">
+          <h4>✨ Fun Facts</h4>
+          <ul class="trivia">
+            <li>Akira Toriyama based Korin on <b>his own pet cat</b> and drew him while the cat was asleep. That's why Korin's eyes are always closed.</li>
+            <li>Korin has <b>blue fur</b> in the original manga but <b>white fur</b> in the anime and the full-colour manga.</li>
+            <li>A later cat of Toriyama's inspired <b>Beerus</b>, the God of Destruction in Dragon Ball Super.</li>
+            <li>According to <i>Dragon Ball: Adventure Special</i>, Korin <b>can't stand dogs</b>.</li>
+            <li>His tower sits right under The Lookout, so climbing it is the way up to meet Kami.</li>
+          </ul>
+        </div>
+
+        <p class="sources reveal">Sources: <a href="https://dragonball.fandom.com/wiki/Korin" target="_blank" rel="noopener">Dragon Ball Wiki</a> · <a href="https://www.anisearch.com/character/20605,korin" target="_blank" rel="noopener">aniSearch</a> · <a href="https://www.wikidata.org/wiki/Q2795709" target="_blank" rel="noopener">Wikidata</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATS ============ -->
+<section style="padding-top:0">
+  <div class="container stats">
+    <div class="stat reveal"><h3 data-count="20000">0</h3><p>Anime Titles</p></div>
+    <div class="stat reveal"><h3 data-count="320000">0</h3><p>Episodes</p></div>
+    <div class="stat reveal"><h3 data-count="2500000">0</h3><p>Happy Fans</p></div>
+    <div class="stat reveal"><h3 data-count="40">0</h3><p>Languages</p></div>
+  </div>
+</section>
+
+<!-- ============ DONATE ============ -->
+<section id="donate" style="padding-top:0">
+  <div class="container">
+    <div class="sec-head reveal">
+      <div>
+        <h2>Support MOSI ANIME</h2>
+        <p>Help us upload more anime faster. Every contribution counts 💖</p>
+      </div>
+    </div>
+    <div class="donate-grid">
+      <div class="d-card reveal">
+        <div class="ico">💝</div>
+        <h3>Donate Money</h3>
+        <p>Donations pay for servers, storage and bandwidth so more anime can come out of maintenance. You can pay instantly with any UPI app.</p>
+        <button class="btn btn-primary" data-support="money">Donate now</button>
+      </div>
+      <div class="d-card reveal">
+        <div class="ico">🎬</div>
+        <h3>Donate Anime Video</h3>
+        <p>Have episodes you own or have permission to share? Send a link or upload the file. Our team checks every submission before it goes live.</p>
+        <button class="btn btn-primary" data-support="video">Submit a video</button>
+      </div>
+      <div class="d-card reveal">
+        <div class="ico">🔥</div>
+        <h3>Most Requested</h3>
+        <ul class="req-list" id="reqList"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section id="join" style="padding-top:0">
+  <div class="container">
+    <div class="cta reveal">
+      <h2>Join the MOSI ANIME Community 🌸</h2>
+      <p>Get new episode alerts, personalised recommendations and exclusive news — free forever.</p>
+      <form id="joinForm">
+        <input type="email" id="email" placeholder="Enter your email address" required>
+        <button class="btn btn-primary" type="submit">Subscribe</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div>
+        <a href="#home" class="logo"><div class="logo-mark">桜</div>MOSI<span class="accent">ANIME</span></a>
+        <p>MOSI ANIME is your favourite place to discover, track and enjoy anime from every genre and every era.</p>
+        <div class="socials">
+          <a href="#" aria-label="Facebook">f</a>
+          <a href="#" aria-label="Instagram">◎</a>
+          <a href="#" aria-label="X">𝕏</a>
+          <a href="#" aria-label="YouTube">▶</a>
+          <a href="#" aria-label="Discord">◆</a>
+        </div>
+      </div>
+      <div>
+        <h5>Browse</h5>
+        <ul><li><a href="#trending">Trending</a></li><li><a href="#top">Top Rated</a></li><li><a href="#schedule">Schedule</a></li><li><a href="#">Movies</a></li></ul>
+      </div>
+      <div>
+        <h5>Genres</h5>
+        <ul><li><a href="#">Action</a></li><li><a href="#">Romance</a></li><li><a href="#">Fantasy</a></li><li><a href="#">Comedy</a></li></ul>
+      </div>
+      <div>
+        <h5>Help</h5>
+        <ul><li><a href="#">About Us</a></li><li><a href="#">Contact</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms</a></li></ul>
+      </div>
+    </div>
+    <p class="copy">© <span id="year"></span> MOSI ANIME. All rights reserved. Made with ❤ for anime fans.</p>
+  </div>
+</footer>
+
+<!-- Shared modal (player / maintenance / donate) -->
+<div class="modal" id="modal"><div class="modal-box" id="modalBox"></div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   CONFIG: edit these values for your own site
+   ===================================================================== */
+const CONFIG = {
+  upiId: "mosianime@upi",      // ← CHANGE THIS to your real UPI ID (e.g. yourname@okaxis)
+  payeeName: "MOSI ANIME",     // name shown in the UPI app
+  paypal: "",                  // optional, e.g. "https://paypal.me/yourname"
+  api: "/api"                  // MOSI server (server.py). If it isn't running, browser storage is used.
+};
+
+/* Anime you uploaded yourself (AniList ID -> episodes). Loaded from data/library.json when server.py runs.
+   Anime with free official episodes (Muse India / Muse Asia / Ani-One Asia) are found automatically. */
+const DEFAULT_LIBRARY = {};
+
+/* Movies/series with no FREE legal stream: show the official trailer + where to watch the full thing legally.
+   (AniList ID -> info). Links for every other anime are fetched automatically from AniList. */
+const WATCH_INFO = {
+  "20954": {
+    trailer: "Sy4bPCuzfiQ", trailerBy: "Shout! Studios (official)",
+    note: "In India the full movie is on Crunchyroll, Sony LIV and the Crunchyroll channel on Prime Video.",
+    links: [
+      {name:"Crunchyroll", url:"https://www.crunchyroll.com/search?q=A%20Silent%20Voice"},
+      {name:"Prime Video", url:"https://www.primevideo.com/search?phrase=A%20Silent%20Voice"},
+      {name:"Sony LIV", url:"https://www.sonyliv.com/"},
+      {name:"Netflix", url:"https://www.netflix.com/title/80223226"},
+      {name:"All options (JustWatch)", url:"https://www.justwatch.com/in/movie/a-silent-voice"}
+    ]
+  }
+};
+
+/* ===================== FEATURED DATA ===================== */
+const anime = [
+  {id:20954,alt:["Koe no Katachi","A Silent Voice: The Movie"],t:"A Silent Voice",img:"img/silentvoice.jpg",b:"img/silentvoice-banner.jpg",g:"Drama",r:8.8,ep:1,dur:130,type:"MOVIE",y:2016},
+  {id:151807,alt:["Ore dake Level Up na Ken"],t:"Solo Leveling",img:"img/solo.jpg",g:"Action",r:8.9,ep:24,type:"TV",y:2024},
+  {id:113415,alt:["JUJUTSU KAISEN"],t:"Jujutsu Kaisen",img:"img/jjk.jpg",g:"Action",r:8.8,ep:47,type:"TV",y:2020},
+  {id:154587,alt:["Frieren: Beyond Journey's End","Sousou no Frieren"],t:"Frieren",img:"img/frieren.jpg",g:"Fantasy",r:9.3,ep:28,type:"TV",y:2023},
+  {id:140960,alt:["SPY×FAMILY"],t:"Spy x Family",img:"img/spy.jpg",g:"Comedy",r:8.6,ep:37,type:"TV",y:2022},
+  {id:101922,alt:["Demon Slayer: Kimetsu no Yaiba","Kimetsu no Yaiba"],t:"Demon Slayer",img:"img/demon.jpg",g:"Action",r:8.7,ep:63,type:"TV",y:2019},
+  {id:21,alt:["ONE PIECE"],t:"One Piece",img:"img/onepiece.jpg",g:"Adventure",r:9.0,ep:1120,type:"TV",y:1999},
+  {id:20665,alt:["Shigatsu wa Kimi no Uso"],t:"Your Lie in April",img:"img/april.jpg",g:"Romance",r:8.7,ep:22,type:"TV",y:2014},
+  {id:16498,alt:["Shingeki no Kyojin"],t:"Attack on Titan",img:"img/aot.jpg",g:"Action",r:9.1,ep:89,type:"TV",y:2013},
+  {id:124080,alt:["Horimiya"],t:"Horimiya",img:"img/horimiya.jpg",g:"Romance",r:8.2,ep:13,type:"TV",y:2021},
+  {id:108465,alt:["Mushoku Tensei: Jobless Reincarnation"],t:"Mushoku Tensei",img:"img/mushoku.jpg",g:"Fantasy",r:8.5,ep:48,type:"TV",y:2021},
+  {id:101921,alt:["Kaguya-sama: Love is War"],t:"Kaguya-sama",img:"img/kaguya.jpg",g:"Comedy",r:8.9,ep:37,type:"TV",y:2019},
+  {id:171018,alt:["DAN DA DAN"],t:"Dandadan",img:"img/dandadan.jpg",g:"Adventure",r:8.6,ep:24,type:"TV",y:2024},
+];
+const extra = [{id:21519,alt:["Kimi no Na wa."],t:"Your Name.",img:"img/yourname.jpg",g:"Romance",r:8.5,ep:1,type:"MOVIE",y:2016}];
+
+const heroSlides = [
+  {id:154587,title:"Frieren: Beyond Journey's End", jp:"葬送のフリーレン", rating:"9.3", eps:"28 Episodes", genre:"Fantasy · Adventure", img:"img/frieren.jpg",
+   desc:"After the party of heroes defeats the Demon King, the elf mage Frieren embarks on a new journey to understand the meaning of time, memories and the people she holds dear.",
+   bg:"radial-gradient(circle at 75% 45%,#0f766e 0%,#1e1b4b 45%,#0b0b14 75%)"},
+  {id:20954,title:"A Silent Voice", jp:"聲の形", rating:"8.8", eps:"Movie · 130 min", genre:"Drama · Romance", img:"img/silentvoice.jpg",
+   desc:"Years after bullying a deaf classmate, Shoya Ishida sets out to find Shoko Nishimiya and make amends. A moving Kyoto Animation film about guilt, forgiveness and learning to listen.",
+   bg:"radial-gradient(circle at 75% 45%,#0369a1 0%,#1e1b4b 45%,#0b0b14 75%)"},
+  {id:151807,title:"Solo Leveling", jp:"俺だけレベルアップな件", rating:"8.9", eps:"24 Episodes", genre:"Action · Fantasy", img:"img/solo.jpg",
+   desc:"In a world where hunters battle deadly monsters, the weakest hunter of all, Sung Jinwoo, gains a mysterious power that lets him level up without limits.",
+   bg:"radial-gradient(circle at 75% 45%,#4c1d95 0%,#1e3a8a 40%,#0b0b14 75%)"},
+  {id:101922,title:"Demon Slayer", jp:"鬼滅の刃", rating:"8.7", eps:"63 Episodes", genre:"Action · Supernatural", img:"img/demon.jpg",
+   desc:"Tanjiro Kamado becomes a demon slayer to avenge his family and cure his little sister Nezuko, who has been turned into a demon.",
+   bg:"radial-gradient(circle at 75% 45%,#9f1239 0%,#3b0764 45%,#0b0b14 75%)"},
+];
+
+const top10 = [154587,16498,21,151807,101921,113415];
+
+const schedule = {
+  Mon:[["18:30","Dandadan","Episode 14"],["20:00","Spy x Family","Episode 38"],["22:30","Horimiya: Pieces","Episode 5"]],
+  Tue:[["19:00","Mushoku Tensei","Episode 49"],["21:30","Kaguya-sama","Special"]],
+  Wed:[["17:30","Solo Leveling","Episode 25"],["20:30","Your Lie in April","Rewatch Marathon"],["23:00","Frieren","Episode 29"]],
+  Thu:[["18:00","Jujutsu Kaisen","Episode 48"],["21:00","Attack on Titan","Final Cut"]],
+  Fri:[["19:30","Demon Slayer","Episode 64"],["22:00","Dandadan","Episode 15"]],
+  Sat:[["07:30","One Piece","Episode 1121"],["16:00","Spy x Family","Episode 39"],["20:00","Solo Leveling","Episode 26"]],
+  Sun:[["10:00","Weekly Recap Show","MOSI Live"],["19:00","Frieren","Episode 30"]],
+};
+const GENRES = ["Action","Adventure","Comedy","Drama","Fantasy","Horror","Mahou Shoujo","Mecha","Music","Mystery","Psychological","Romance","Sci-Fi","Slice of Life","Sports","Supernatural","Thriller"];
+
+/* ===================== HELPERS ===================== */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ls = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} };
+const safeImg = s => (s && !String(s).startsWith("data:")) ? s : "";
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2600)}
+
+/* Registry of every anime shown on the page (id -> item) */
+const ITEMS = new Map();
+const reg = it => { ITEMS.set(String(it.id), it); return it };
+const fromStatic = a => reg({id:a.id,title:a.t,titles:[a.t,...(a.alt||[])],img:a.img,banner:a.b,genre:a.g,score:a.r,eps:a.ep,dur:a.dur,format:a.type,year:a.y});
+anime.forEach(fromStatic); extra.forEach(fromStatic);
+
+function fromAniList(m){
+  return reg({
+    id:m.id, title:m.title.english || m.title.romaji, native:m.title.native,
+    titles:[m.title.english, m.title.romaji, ...(m.synonyms||[])].filter(Boolean),
+    img:m.coverImage?.extraLarge || m.coverImage?.large, banner:m.bannerImage, color:m.coverImage?.color,
+    genre:(m.genres||[])[0]||"", genres:m.genres||[],
+    score:m.averageScore ? (m.averageScore/10).toFixed(1) : "–",
+    eps:m.episodes || (m.nextAiringEpisode ? m.nextAiringEpisode.episode-1 : "?"),
+    format:(m.format||"").replace("_"," "), year:m.seasonYear, status:m.status, dur:m.format==="MOVIE" ? m.duration : null
+  });
+}
+
+/* ===================== BACKEND / STORAGE ===================== */
+let BACKEND = false;
+let library = {...DEFAULT_LIBRARY, ...ls("mosi_library", {})};
+let requests = ls("mosi_requests", {});            // {id:{count,title,img}}
+const favs = new Set(ls("mosi_favs", []));
+
+async function api(path, body){
+  const opt = body ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)} : {};
+  const r = await fetch(CONFIG.api + path, opt);
+  if (!r.ok) throw new Error("API " + r.status);
+  return r.json();
+}
+async function initBackend(){
+  try {
+    library = await api("/library");
+    requests = await api("/requests");
+    BACKEND = true;
+    STREAM_ON = !!(await api("/status")).stream;
+  } catch { BACKEND = false; }
+  refreshStatuses();
+}
+const hasUploads = id => { const e = library[String(id)]; return !!e && Array.isArray(e.episodes) && e.episodes.length > 0 };
+const STREAM = {};                 // id -> true (free official episodes found) / false
+let STREAM_ON = false;             // server has a YouTube API key
+const isAvailable = id => hasUploads(id) || STREAM[String(id)] === true;
+
+/* Ask the server which anime have free official episodes, then update the badges */
+let checkQ = new Map(), checkT;
+function queueCheck(items){
+  if (!BACKEND || !STREAM_ON) return;
+  items.forEach(a => { if (a && STREAM[String(a.id)] === undefined) checkQ.set(String(a.id), a) });
+  clearTimeout(checkT); checkT = setTimeout(runCheck, 150);
+}
+async function runCheck(){
+  const batch = [...checkQ.values()].slice(0, 100); if (!batch.length) return;
+  batch.forEach(a => checkQ.delete(String(a.id)));
+  try {
+    const r = await api("/stream/check", {items: batch.map(a => ({id:a.id, titles:a.titles || [a.title]}))});
+    if (r.enabled && r.ready === false){ batch.forEach(a => checkQ.set(String(a.id), a)); checkT = setTimeout(runCheck, 4000); return }
+    Object.entries(r.available || {}).forEach(([id, v]) => { STREAM[id] = v; paintStatus(id) });
+    if ($("#bAvail").checked) renderBrowse();
+  } catch {}
+  if (checkQ.size) checkT = setTimeout(runCheck, 300);
+}
+function statusOf(id){
+  if (isAvailable(id)) return {cls:"ok", text:"▶ Available", icon:"▶"};
+  if (WATCH_INFO[String(id)]) return {cls:"lg", text:"🎬 Trailer + Legal", icon:"🎬"};
+  return {cls:"mt", text:"🛠 Maintenance", icon:"🛠"};
+}
+function paintStatus(id){
+  const st = statusOf(id);
+  document.querySelectorAll(`[data-open="${id}"] .status`).forEach(el => {
+    el.className = `status ${st.cls}${el.classList.contains("inline")?" inline":""}`;
+    el.textContent = st.text;
+  });
+  document.querySelectorAll(`[data-open="${id}"] .play-ov span`).forEach(el => el.textContent = st.icon);
+}
+
+/* ===================== CARDS ===================== */
+function cardHTML(a){
+  const st = statusOf(a.id), f = favs.has(String(a.id));
+  return `<div class="card" data-open="${a.id}">
+    <div class="poster" style="background:${a.color||"#1f1f35"}">
+      <img src="${esc(a.img)}" alt="${esc(a.title)} poster" loading="lazy" onerror="this.style.display='none'">
+      <span class="badge">${esc(a.format||"TV")}${a.year?" · "+a.year:""}</span>
+      <button class="fav ${f?"on":""}" data-fav="${a.id}" title="Add to my list">${f?"♥":"♡"}</button>
+      <span class="ep">${/MOVIE/i.test(a.format||"") ? (a.dur ? a.dur+" MIN" : "MOVIE") : "EP "+esc(a.eps)}</span>
+      <span class="status ${st.cls}">${st.text}</span>
+      <div class="play-ov"><span>${st.icon}</span></div>
+    </div>
+    <div class="card-body">
+      <h3 title="${esc(a.title)}">${esc(a.title)}</h3>
+      <small><span>${esc(a.genre)}</span><b>★ ${esc(a.score)}</b></small>
+    </div>
+  </div>`;
+}
+
+/* Trending (featured) */
+let genre = "All";
+function renderCards(){
+  const list = anime.filter(a => genre==="All" || a.g===genre).map(a => ITEMS.get(String(a.id)));
+  $("#animeGrid").innerHTML = list.map(cardHTML).join("");
+  $("#empty").style.display = list.length ? "none" : "block";
+}
+const tGenres = ["All", ...new Set(anime.map(a=>a.g))];
+$("#chips").innerHTML = tGenres.map(g=>`<button class="chip ${g==="All"?"on":""}">${g}</button>`).join("");
+$("#chips").addEventListener("click", e => {
+  if (!e.target.classList.contains("chip")) return;
+  document.querySelectorAll(".chip").forEach(c=>c.classList.remove("on"));
+  e.target.classList.add("on"); genre = e.target.textContent; renderCards();
+});
+
+/* Top 10 */
+function renderTop(){
+  $("#topList").innerHTML = top10.map((id,i) => {
+    const a = ITEMS.get(String(id)), st = statusOf(id);
+    return `<div class="top-item" data-open="${id}" style="cursor:pointer">
+      <div class="rank">${String(i+1).padStart(2,"0")}</div>
+      <div class="thumb"><img src="${esc(a.img)}" alt="${esc(a.title)}"></div>
+      <div><h4>${esc(a.title)}</h4><p>${esc(a.genre)} · ${a.eps} eps · <span style="color:#ffd166">★ ${a.score}</span></p>
+      <span class="status ${st.cls} inline" style="margin:4px 0 0">${st.text}</span></div>
+    </div>`}).join("");
+}
+
+/* ===================== ALL ANIME (AniList API) ===================== */
+const ANILIST = "https://graphql.anilist.co";
+const QUERY = `query($page:Int,$search:String,$genre:String,$format:MediaFormat,$status:MediaStatus,$sort:[MediaSort]){
+  Page(page:$page,perPage:30){
+    pageInfo{total hasNextPage currentPage}
+    media(type:ANIME,isAdult:false,search:$search,genre:$genre,format:$format,status:$status,sort:$sort,genre_not_in:["Hentai"]){
+      id title{romaji english native} synonyms coverImage{extraLarge large color} bannerImage
+      format episodes duration status averageScore genres seasonYear nextAiringEpisode{episode}
+    }
+  }
+}`;
+async function anilist(query, variables){
+  const r = await fetch(ANILIST, {method:"POST", headers:{"Content-Type":"application/json", Accept:"application/json"}, body:JSON.stringify({query, variables})});
+  if (r.status === 429) throw new Error("Too many requests, please wait a moment");
+  if (!r.ok) throw new Error("AniList " + r.status);
+  const j = await r.json();
+  if (j.errors) throw new Error(j.errors[0].message);
+  return j.data;
+}
+$("#bGenre").innerHTML += GENRES.map(g=>`<option>${g}</option>`).join("");
+const B = {page:1, hasNext:true, loading:false, req:0, items:[]};
+const skeletons = n => Array.from({length:n}, () => `<div class="skel"></div>`).join("");
+
+function renderBrowse(){
+  let list = B.items;
+  if ($("#bAvail").checked){
+    const seen = new Set(), lib = libraryList();
+    list = [...lib, ...B.items.filter(a => isAvailable(a.id))].filter(a => !seen.has(String(a.id)) && seen.add(String(a.id)));
+  }
+  $("#bGrid").innerHTML = list.map(cardHTML).join("") || `<p class="empty" style="display:block;grid-column:1/-1">${$("#bAvail").checked ? "No available anime in these results yet. Try “Load more” or another search." : "No anime found 🔎"}</p>`;
+}
+function offlineList(){
+  const q = $("#bSearch").value.trim().toLowerCase(), g = $("#bGenre").value, f = $("#bFormat").value;
+  return [...anime, ...extra].map(a => ITEMS.get(String(a.id)))
+    .filter(a => (!q || a.title.toLowerCase().includes(q)) && (!g || a.genre===g) && (!f || a.format===f));
+}
+function libraryList(){
+  const q = $("#bSearch").value.trim().toLowerCase();
+  return Object.entries(library).filter(([id]) => hasUploads(id)).map(([id, e]) =>
+    ITEMS.get(id) || reg({id, title:e.title||"Anime #"+id, img:e.img||"", genre:e.genre||"", score:"–", eps:(e.episodes||[]).length||"?", format:"TV"})
+  ).filter(a => !q || a.title.toLowerCase().includes(q));
+}
+
+async function loadBrowse(reset){
+  if (reset){ B.page=1; B.hasNext=true; B.items=[]; $("#bGrid").innerHTML = skeletons(10); }
+  else if (B.loading || !B.hasNext) return;
+  const my = ++B.req; B.loading = true; $("#bMore").disabled = true; $("#bMore").textContent = "Loading…";
+
+  const v = {page:B.page};
+  const q = $("#bSearch").value.trim(), g = $("#bGenre").value, f = $("#bFormat").value, s = $("#bStatus").value, so = $("#bSort").value;
+  if (q) v.search = q; if (g) v.genre = g; if (f) v.format = f; if (s) v.status = s;
+  v.sort = q ? ["SEARCH_MATCH", so] : [so];
+  try {
+    const d = await anilist(QUERY, v);
+    if (my !== B.req) return;
+    $("#offNote").classList.remove("show");
+    const fresh = d.Page.media.map(fromAniList);
+    B.items.push(...fresh); queueCheck(fresh);
+    B.hasNext = d.Page.pageInfo.hasNextPage; B.page++;
+    renderBrowse();
+    const tot = d.Page.pageInfo.total;
+    $("#bInfo").textContent = `Showing ${B.items.length} of ${tot>=5000?"5,000+":tot.toLocaleString()} anime${q?` matching “${q}”`:""}`;
+  } catch (err) {
+    if (my !== B.req) return;
+    if (B.items.length === 0){
+      $("#offNote").classList.add("show");
+      B.items = offlineList(); B.hasNext = false; renderBrowse();
+      $("#bInfo").textContent = `Showing ${B.items.length} saved anime (offline)`;
+    } else toast("⚠️ " + err.message);
+  } finally {
+    if (my === B.req){
+      B.loading = false; $("#bMore").disabled = false; $("#bMore").textContent = "Load more anime";
+      $("#bMore").style.display = B.hasNext ? "" : "none";
+    }
+  }
+}
+let deb;
+const reload = () => { clearTimeout(deb); deb = setTimeout(() => loadBrowse(true), 450) };
+$("#bSearch").addEventListener("input", reload);
+["#bGenre","#bFormat","#bStatus","#bSort"].forEach(s => $(s).addEventListener("change", () => loadBrowse(true)));
+$("#bAvail").addEventListener("change", renderBrowse);
+$("#bMore").addEventListener("click", () => loadBrowse(false));
+$("#searchInput").addEventListener("input", e => {
+  $("#bSearch").value = e.target.value; reload();
+  if (e.target.value.trim()) document.getElementById("browse").scrollIntoView({behavior:"smooth"});
+});
+
+function refreshStatuses(){
+  renderCards(); renderTop(); if (B.items.length) renderBrowse(); renderRequests();
+  queueCheck([...ITEMS.values()]);
+}
+
+/* ===================== MODALS ===================== */
+function openModal(html, cls=""){
+  const box = $("#modalBox"); box.className = "modal-box " + cls; box.innerHTML = html; box.scrollTop = 0;
+  $("#modal").classList.add("show"); document.body.style.overflow = "hidden";
+}
+function closeModal(){ try { YTP && YTP.destroy && YTP.destroy() } catch {} YTP = null; openItem.t = (openItem.t||0) + 1; $("#modal").classList.remove("show"); $("#modalBox").innerHTML = ""; document.body.style.overflow = ""; }
+$("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal() });
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal() });
+
+const metaLine = a => [a.format, a.year, a.genres?.slice(0,3).join(" · ") || a.genre, (a.format==="MOVIE" && a.dur) ? a.dur+" min" : (a.eps && a.eps!=="?" ? a.eps+" eps" : ""), a.score!=="–" ? "★ "+a.score : ""].filter(Boolean).join("  •  ");
+async function openItem(a){
+  if (hasUploads(a.id)) return openPlayer(a);
+  const fallback = () => WATCH_INFO[String(a.id)] ? openWatchInfo(a, WATCH_INFO[String(a.id)]) : openMaintenance(a);
+  if (!BACKEND || !STREAM_ON || STREAM[String(a.id)] === false) return fallback();
+  openModal(`<div class="player" style="background:linear-gradient(rgba(11,11,20,.55),rgba(11,11,20,.85)),url('${esc(a.banner||a.img)}') center/cover">
+      <button class="close" data-close>✕</button><div class="finding"><div class="spin"></div>Finding free full episodes of <b>${esc(a.title)}</b>…</div></div>
+      <div class="modal-info"><h3>${esc(a.title)}</h3><p>${esc(metaLine(a))}</p></div>`, "wide");
+  const token = (openItem.t = (openItem.t||0) + 1);
+  try {
+    const r = await api("/stream/find", {id:a.id, titles:a.titles || [a.title]});
+    if (token !== openItem.t || !$("#modal").classList.contains("show")) return;
+    STREAM[String(a.id)] = r.sources.length > 0; paintStatus(a.id);
+    if (r.sources.length) openStream(a, r.sources); else fallback();
+  } catch { if (token === openItem.t) fallback() }
+}
+
+/* ---- Official trailer + where to watch legally (no free stream exists) ---- */
+function openWatchInfo(a, info){
+  const id = String(a.id), cnt = requests[id]?.count || 0, asked = ls("mosi_asked", []).includes(id);
+  openModal(`
+    <div class="player" id="player" style="background:#000">
+      <button class="close" data-close>✕</button>
+      <iframe src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(info.trailer)}?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen title="${esc(a.title)} official trailer"></iframe>
+    </div>
+    <div class="modal-info">
+      <span class="status lg inline">🎬 Official trailer</span>
+      <h3>${esc(a.title)}</h3><p>${esc(metaLine(a))}</p>
+      <div class="legal-box">
+        <b>🍿 Watch the full ${/MOVIE/i.test(a.format||"")?"movie":"series"} legally</b>
+        <p>${esc(info.note || "Available on these official services:")}</p>
+        <div class="legal-links">${info.links.map(l => `<a class="btn btn-ghost" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)} ↗</a>`).join("")}</div>
+      </div>
+      <div class="mt-row" style="margin:16px 0 0">
+        <button class="btn ${asked?"btn-ghost":"btn-primary"}" id="reqBtn" ${asked?"disabled":""}>🙋 ${asked?"Requested":"Request free streaming"} · <b id="reqCount">${cnt}</b></button>
+        <button class="btn btn-ghost" data-support="money">💝 Support MOSI ANIME</button>
+      </div>
+      <p class="credit">Trailer: ${esc(info.trailerBy || "official")} via YouTube. There's no free legal stream of the full ${/MOVIE/i.test(a.format||"")?"movie":"series"} right now, so we link to the official services instead.</p>
+    </div>`, "wide");
+  $("#reqBtn").onclick = () => requestAnime(a);
+}
+
+/* Fetch official streaming links from AniList (shown on the Maintenance screen) */
+async function loadLegalLinks(a){
+  const box = $("#legalAuto"); if (!box) return;
+  try {
+    const d = await anilist(`query($id:Int){Media(id:$id){externalLinks{site url type}}}`, {id:+a.id});
+    const links = (d.Media?.externalLinks || []).filter(l => l.type === "STREAMING");
+    if (!links.length || !$("#legalAuto")) return;
+    box.innerHTML = `<b>📺 Watch legally right now</b><div class="legal-links">${links.map(l => `<a class="btn btn-ghost" href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.site)} ↗</a>`).join("")}</div>`;
+    box.hidden = false;
+  } catch {}
+}
+
+/* ---- Stream player: full episodes from official free channels ---- */
+let YTP = null, ytReady = null;
+function loadYT(){
+  if (ytReady) return ytReady;
+  ytReady = new Promise(res => {
+    if (window.YT && YT.Player) return res(true);
+    window.onYouTubeIframeAPIReady = () => res(true);
+    const sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api"; sc.onerror = () => res(false);
+    document.head.appendChild(sc); setTimeout(() => res(!!(window.YT && YT.Player)), 6000);
+  });
+  return ytReady;
+}
+function openStream(a, sources){
+  const saved = ls("mosi_progress", {})[a.id] || {};
+  let si = Math.max(0, sources.findIndex(s => s.id === saved.pid)), eps = [], cur = 0;
+  openModal(`
+    <div class="player" id="player" style="background:#000"><button class="close" data-close>✕</button><div id="ytHost"></div></div>
+    <div class="modal-info">
+      <span class="status ok inline">▶ Free full episodes</span>
+      <h3>${esc(a.title)} <span id="epNow" class="ep-now"></span></h3>
+      <p>${esc(metaLine(a))}</p>
+      <div class="p-ctrl">
+        ${sources.length > 1 ? `<select id="srcSel">${sources.map((s,i)=>`<option value="${i}" ${i===si?"selected":""}>${esc(s.title)} · ${s.count} videos</option>`).join("")}</select>` : `<span class="src-one">${esc(sources[0].title)}</span>`}
+        <button class="btn btn-ghost" id="prevEp">⏮ Prev</button>
+        <button class="btn btn-primary" id="nextEp">Next ⏭</button>
+        <label class="toggle auto"><input type="checkbox" id="autoNext" ${ls("mosi_autonext", true) ? "checked" : ""}> Auto-next</label>
+      </div>
+      <div class="eps ep-grid" id="epGrid"></div>
+      <p class="credit" id="credit"></p>
+    </div>`, "wide");
+
+  const save = () => { const p = ls("mosi_progress", {}); p[a.id] = {pid:sources[si].id, i:cur}; lsSet("mosi_progress", p) };
+  async function play(i){
+    if (!eps.length) return;
+    cur = Math.max(0, Math.min(eps.length - 1, i)); save();
+    document.querySelectorAll("#epGrid .ep-btn").forEach((b,j) => b.classList.toggle("on", j === cur));
+    $("#epGrid .ep-btn.on")?.scrollIntoView({block:"nearest"});
+    $("#epNow").textContent = `· Episode ${eps[cur].n}`;
+    $("#prevEp").disabled = cur === 0; $("#nextEp").disabled = cur === eps.length - 1;
+    const vid = eps[cur].videoId, ok = await loadYT();
+    if (!$("#ytHost")) return;
+    if (ok){
+      if (YTP && YTP.loadVideoById && document.getElementById("ytHost")?.tagName === "IFRAME") YTP.loadVideoById(vid);
+      else YTP = new YT.Player("ytHost", {videoId:vid, host:"https://www.youtube-nocookie.com",
+        playerVars:{autoplay:1, rel:0, playsinline:1, modestbranding:1},
+        events:{onStateChange:e => { if (e.data === 0 && $("#autoNext")?.checked && cur < eps.length - 1) play(cur + 1) }}});
+    } else {
+      $("#ytHost").outerHTML = `<iframe id="ytHost" src="https://www.youtube-nocookie.com/embed/${vid}?autoplay=1&rel=0&playsinline=1" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>`;
+    }
+  }
+  async function loadSource(i){
+    si = i; eps = []; try { YTP && YTP.destroy && YTP.destroy() } catch {} YTP = null;
+    $("#player").innerHTML = `<button class="close" data-close>✕</button><div id="ytHost"></div><div class="finding" id="pLoading"><div class="spin"></div>Loading episodes…</div>`;
+    $("#epGrid").innerHTML = "";
+    const s = sources[si];
+    $("#credit").innerHTML = `Official free stream by <b>${esc(s.channel)}</b> via YouTube. Licensed by the publisher.`;
+    try {
+      const r = await api("/stream/episodes?pid=" + encodeURIComponent(s.id));
+      eps = r.episodes || [];
+    } catch { eps = [] }
+    if (!$("#epGrid")) return;
+    $("#pLoading")?.remove();
+    if (!eps.length){
+      $("#player").insertAdjacentHTML("beforeend", `<div class="finding">😕 These episodes can't be played in your region right now.${sources.length>1?"<br>Try another season or language above.":""}</div>`);
+      return;
+    }
+    $("#epGrid").innerHTML = eps.map((e,j) => `<button class="ep-btn" data-i="${j}" title="${esc(e.title)}">EP ${e.n}</button>`).join("");
+    play(saved.pid === s.id ? (saved.i || 0) : 0);
+  }
+  $("#epGrid").onclick = e => { const b = e.target.closest(".ep-btn"); if (b) play(+b.dataset.i) };
+  $("#prevEp").onclick = () => play(cur - 1);
+  $("#nextEp").onclick = () => play(cur + 1);
+  $("#autoNext").onchange = e => lsSet("mosi_autonext", e.target.checked);
+  if ($("#srcSel")) $("#srcSel").onchange = e => loadSource(+e.target.value);
+  loadSource(si);
+}
+
+/* ---- Player (uploaded anime) ---- */
+function openPlayer(a){
+  const e = library[String(a.id)] || {}, eps = e.episodes || [];
+  openModal(`
+    <div class="player" id="player" style="background:linear-gradient(rgba(11,11,20,.45),rgba(11,11,20,.75)),url('${esc(a.banner||a.img)}') center/cover">
+      <button class="close" data-close>✕</button>
+
+    </div>
+    <div class="modal-info">
+      <span class="status ok inline">▶ Available</span>
+      <h3>${esc(a.title)}</h3><p>${esc(metaLine(a))}</p>
+      ${eps.length ? `<div class="eps">${eps.map((x,i)=>`<button class="ep-btn" data-ep="${i}">EP ${esc(x.ep)}${x.lang?" · "+esc(x.lang):""}</button>`).join("")}</div>` : ""}
+      <div class="mt-row" style="margin:14px 0 0"><button class="btn btn-ghost" data-support="money">💝 Support MOSI ANIME</button></div>
+    </div>`, "wide");
+  if (eps.length){
+    const play = i => {
+      document.querySelectorAll(".ep-btn").forEach((b,j)=>b.classList.toggle("on", i===j));
+      $("#player").innerHTML = `<button class="close" data-close>✕</button>` + embedVideo(eps[i].src);
+    };
+    $("#modalBox").querySelectorAll(".ep-btn").forEach(b => b.onclick = () => play(+b.dataset.ep));
+    play(0);
+  }
+}
+function embedVideo(src){
+  src = String(src||"");
+  const yt = src.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/|shorts\/))([\w-]{11})/);
+  if (yt) return `<iframe src="https://www.youtube.com/embed/${yt[1]}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+  const gd = src.match(/drive\.google\.com\/file\/d\/([\w-]+)/);
+  if (gd) return `<iframe src="https://drive.google.com/file/d/${gd[1]}/preview" allowfullscreen></iframe>`;
+  if (/^\/?uploads\//.test(src) || /\.(mp4|webm|m4v|mov|ogg|mkv)(\?|$)/i.test(src))
+    return `<video src="${esc(src)}" controls autoplay playsinline></video>`;
+  return `<a class="btn btn-primary" href="${esc(src)}" target="_blank" rel="noopener">▶ Open video ↗</a>`;
+}
+
+/* ---- Maintenance (not uploaded) ---- */
+function openMaintenance(a, tab="money"){
+  const id = String(a.id), cnt = requests[id]?.count || 0, asked = ls("mosi_asked", []).includes(id);
+  openModal(`
+    <div class="mt-head" style="background-image:linear-gradient(0deg,var(--bg2) 5%,rgba(11,11,20,.55)),url('${esc(a.banner||a.img)}')">
+      <button class="close" data-close>✕</button>
+      <div class="mt-head-in">
+        <img src="${esc(a.img)}" alt="" onerror="this.style.visibility='hidden'">
+        <div><span class="status mt inline">🛠 Under Maintenance</span><h3>${esc(a.title)}</h3><p>${esc(metaLine(a))}</p></div>
+      </div>
+    </div>
+    <div class="mt-body">
+      <div class="legal-box" id="legalAuto" hidden></div>
+      <div class="mt-alert">🔧 <b>This anime isn't uploaded yet.</b> Our team is working on it. You can help bring <b>${esc(a.title)}</b> to MOSI ANIME faster by requesting it, <b>donating money</b> or <b>donating video</b>.</div>
+      <div class="mt-row">
+        <button class="btn ${asked?"btn-ghost":"btn-primary"}" id="reqBtn" ${asked?"disabled":""}>🙋 ${asked?"Requested":"Request this anime"} · <b id="reqCount">${cnt}</b></button>
+        <form class="inline-form" id="notifyForm"><input type="email" required placeholder="Your email for an upload alert"><button class="btn btn-ghost">🔔 Notify me</button></form>
+      </div>
+      ${donateTabs(a, tab)}
+    </div>`, "wide");
+  bindDonate(a);
+  loadLegalLinks(a);
+  $("#reqBtn").onclick = () => requestAnime(a);
+  $("#notifyForm").onsubmit = async ev => {
+    ev.preventDefault(); const email = ev.target.querySelector("input").value;
+    const rec = {id, title:a.title, email};
+    try { if (!BACKEND) throw 0; await api("/notify", rec) } catch { const n = ls("mosi_notify", []); n.push(rec); lsSet("mosi_notify", n) }
+    ev.target.reset(); toast(`🔔 We'll email you when ${a.title} is uploaded!`);
+  };
+}
+
+/* ---- General support modal ---- */
+function openSupport(tab="money"){
+  openModal(`
+    <div class="mt-head" style="background:linear-gradient(135deg,#3b0764,#be185d 60%,#f97316)">
+      <button class="close" data-close>✕</button>
+      <div><span class="status ok inline" style="background:#fff;color:#be185d">💖 Thank you</span><h3>Support MOSI ANIME</h3><p>Help us take more anime out of maintenance.</p></div>
+    </div>
+    <div class="mt-body">${donateTabs(null, tab)}</div>`, "wide");
+  bindDonate(null);
+}
+
+/* ---- Donate money / donate video tabs ---- */
+function donateTabs(a, tab){
+  return `
+  <div class="tabs">
+    <button type="button" class="tab ${tab==="money"?"on":""}" data-tab="money">💝 Donate Money</button>
+    <button type="button" class="tab ${tab==="video"?"on":""}" data-tab="video">🎬 Donate Anime Video</button>
+  </div>
+  <div class="pane" data-pane="money" ${tab!=="money"?"hidden":""}>
+    <p class="pane-sub">Your donation pays for servers, storage and bandwidth${a?` so we can upload <b>${esc(a.title)}</b> sooner`:""}.</p>
+    <div class="amounts">
+      ${[51,101,251,501,1001].map((v,i)=>`<button type="button" class="amt ${i===1?"on":""}" data-amt="${v}">₹${v}</button>`).join("")}
+      <input type="number" min="1" id="amtCustom" placeholder="₹ Other">
+    </div>
+    <div class="pay-grid">
+      <div class="qr"><img id="qrImg" alt="UPI QR code"><span class="qr-fallback">📶 The QR code appears when you're online.<br>Use the UPI ID instead.</span></div>
+      <div class="pay-info">
+        <small>Pay to UPI ID</small>
+        <div class="upi"><code>${esc(CONFIG.upiId)}</code><button type="button" class="btn-mini" id="copyUpi">Copy</button></div>
+        <a class="btn btn-primary" id="upiBtn" href="#">Pay ₹101 with UPI app</a>
+        ${CONFIG.paypal?`<a class="btn btn-ghost" href="${esc(CONFIG.paypal)}" target="_blank" rel="noopener">Pay with PayPal</a>`:""}
+        <small>Works with GPay, PhonePe, Paytm and BHIM. On a computer, scan the QR code with your phone.</small>
+      </div>
+    </div>
+    <form class="inline-form" id="thanksForm"><input type="text" id="donorName" placeholder="Your name (optional)"><button class="btn btn-ghost">✅ I've donated</button></form>
+  </div>
+  <div class="pane" data-pane="video" ${tab!=="video"?"hidden":""}>
+    <p class="pane-sub">Have this anime? Send a video link or upload a file. Our team checks every submission before it goes live.</p>
+    <form class="vform" id="videoForm">
+      <label>Anime<input name="anime" required value="${a?esc(a.title):""}" ${a?"readonly":""} placeholder="Anime name"></label>
+      <label>Episode(s)<input name="episodes" required placeholder="e.g. 1  or  1-12"></label>
+      <label>Language<select name="lang"><option>Japanese (Sub)</option><option>English Dub</option><option>Hindi Dub</option><option>Other</option></select></label>
+      <label>Quality<select name="quality"><option>1080p</option><option selected>720p</option><option>480p</option></select></label>
+      <label class="full">Video link (YouTube, Google Drive or direct .mp4)<input name="link" type="url" placeholder="https://..."></label>
+      <label class="full">…or upload a video file<input name="file" type="file" accept="video/*"></label>
+      <label>Your name<input name="name" required></label>
+      <label>Email<input name="email" type="email" required></label>
+      <label class="full check"><input type="checkbox" name="rights" required> I own this video or have permission from the copyright holder to share it.</label>
+      <div class="full progress" id="upProg" hidden><div></div></div>
+      <button class="btn btn-primary full" id="vSubmit">📤 Submit video</button>
+    </form>
+  </div>`;
+}
+
+function bindDonate(a){
+  const box = $("#modalBox");
+  box.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+    box.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x===t));
+    box.querySelectorAll(".pane").forEach(p => p.hidden = p.dataset.pane !== t.dataset.tab);
+  });
+  /* Money */
+  let amount = 101;
+  const note = "MOSI ANIME - " + (a ? a.title : "Support");
+  const setAmt = v => {
+    amount = Math.max(1, Math.round(+v || 0));
+    const link = `upi://pay?pa=${encodeURIComponent(CONFIG.upiId)}&pn=${encodeURIComponent(CONFIG.payeeName)}&am=${amount}&cu=INR&tn=${encodeURIComponent(note.slice(0,60))}`;
+    $("#upiBtn").href = link; $("#upiBtn").textContent = `Pay ₹${amount} with UPI app`;
+    const q = $("#qrImg"); q.parentElement.classList.remove("noqr");
+    q.onerror = () => q.parentElement.classList.add("noqr");
+    q.src = "https://api.qrserver.com/v1/create-qr-code/?size=200x200&margin=0&data=" + encodeURIComponent(link);
+  };
+  box.querySelectorAll(".amt").forEach(b => b.onclick = () => {
+    box.querySelectorAll(".amt").forEach(x => x.classList.toggle("on", x===b)); $("#amtCustom").value = ""; setAmt(b.dataset.amt);
+  });
+  $("#amtCustom").oninput = e => { if (+e.target.value > 0){ box.querySelectorAll(".amt").forEach(x=>x.classList.remove("on")); setAmt(e.target.value) } };
+  $("#copyUpi").onclick = () => {
+    (navigator.clipboard?.writeText(CONFIG.upiId) || Promise.reject()).then(() => toast("📋 UPI ID copied!"), () => toast("UPI ID: " + CONFIG.upiId));
+  };
+  $("#thanksForm").onsubmit = async ev => {
+    ev.preventDefault();
+    const rec = {name:$("#donorName").value.trim() || "Anonymous", amount, anime:a?a.title:"General", animeId:a?a.id:null};
+    try { if (!BACKEND) throw 0; await api("/donation", rec) } catch { const d = ls("mosi_donations", []); d.push({...rec, at:Date.now()}); lsSet("mosi_donations", d) }
+    ev.target.reset(); toast(`🙏 Thank you ${rec.name}! Your ₹${amount} support means a lot 💖`);
+  };
+  setAmt(101);
+
+  /* Video */
+  $("#videoForm").onsubmit = async ev => {
+    ev.preventDefault();
+    const f = ev.target, fd = new FormData(f), file = f.file.files[0];
+    const link = (fd.get("link")||"").trim();
+    if (!link && !file) return toast("⚠️ Please add a video link or choose a file");
+    const rec = {animeId:a?a.id:null, anime:fd.get("anime"), img:a?safeImg(a.img):"", episodes:fd.get("episodes"), lang:fd.get("lang"),
+                 quality:fd.get("quality"), link, name:fd.get("name"), email:fd.get("email"), fileName:file?file.name:""};
+    const btn = $("#vSubmit"); btn.disabled = true; btn.textContent = "Submitting…";
+    try {
+      if (!BACKEND) throw new Error("offline");
+      const {id} = await api("/contribute", rec);
+      if (file) await uploadFile(id, file, p => { $("#upProg").hidden = false; $("#upProg div").style.width = p + "%"; btn.textContent = `Uploading… ${p}%` });
+      toast("🎉 Thanks! Your video was submitted for review.");
+      f.reset(); if (a) f.anime.value = a.title;
+    } catch (err) {
+      if (err.message === "offline"){
+        const c = ls("mosi_contributions", []); c.push({...rec, at:Date.now(), status:"pending"}); lsSet("mosi_contributions", c);
+        toast(file ? "💾 Details saved. File uploads need the MOSI server running (server.py)." : "🎉 Thanks! Your video link was saved for review.");
+        f.reset(); if (a) f.anime.value = a.title;
+      } else toast("⚠️ Upload failed: " + err.message);
+    } finally { btn.disabled = false; btn.textContent = "📤 Submit video"; $("#upProg").hidden = true; }
+  };
+}
+function uploadFile(cid, file, onProg){
+  return new Promise((res, rej) => {
+    const x = new XMLHttpRequest();
+    x.open("POST", `${CONFIG.api}/upload?cid=${encodeURIComponent(cid)}&name=${encodeURIComponent(file.name)}`);
+    x.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+    x.upload.onprogress = e => e.lengthComputable && onProg(Math.round(e.loaded / e.total * 100));
+    x.onload = () => x.status < 300 ? res(JSON.parse(x.responseText)) : rej(new Error(x.responseText || x.status));
+    x.onerror = () => rej(new Error("network error"));
+    x.send(file);
+  });
+}
+
+/* ---- Requests ---- */
+async function requestAnime(a){
+  const id = String(a.id); let count = null;
+  if (BACKEND){ try { count = (await api("/request", {id, title:a.title, img:safeImg(a.img)})).count } catch {} }
+  const r = requests[id] || {count:0, title:a.title, img:safeImg(a.img)};
+  r.count = count ?? r.count + 1; requests[id] = r;
+  if (!BACKEND) lsSet("mosi_requests", requests);
+  const asked = ls("mosi_asked", []); asked.push(id); lsSet("mosi_asked", asked);
+  $("#reqBtn").disabled = true; $("#reqBtn").className = "btn btn-ghost";
+  $("#reqBtn").innerHTML = `🙋 Requested · <b id="reqCount">${r.count}</b>`;
+  toast(`✅ Request sent! ${r.count} ${r.count>1?"fans want":"fan wants"} ${a.title}`);
+  renderRequests();
+}
+function renderRequests(){
+  const top = Object.entries(requests).sort((x,y) => (y[1].count||0) - (x[1].count||0)).slice(0,5);
+  $("#reqList").innerHTML = top.length ? top.map(([id, r]) => {
+    const it = ITEMS.get(id) || reg({id, title:r.title, img:r.img, genre:"", score:"–", eps:"?"});
+    return `<li data-open="${id}"><img src="${esc(it.img)}" alt="" onerror="this.style.visibility='hidden'"><span>${esc(it.title)}</span><b>🙋 ${r.count}</b></li>`;
+  }).join("") : `<li class="req-empty" style="cursor:default">No requests yet. Click any 🛠 Maintenance anime and press <b>Request</b>.</li>`;
+}
+
+/* ---- Global click handling ---- */
+function toggleFav(id){
+  favs.has(id) ? favs.delete(id) : favs.add(id); lsSet("mosi_favs", [...favs]);
+  const on = favs.has(id);
+  document.querySelectorAll(`[data-fav="${id}"]`).forEach(b => { b.classList.toggle("on", on); b.textContent = b.id==="heroFav" ? (on ? "♥ In My List" : "＋ My List") : (on ? "♥" : "♡") });
+  toast(on ? `❤ Added ${ITEMS.get(id)?.title || ""} to your list` : "Removed from your list");
+}
+document.addEventListener("click", e => {
+  const fav = e.target.closest("[data-fav]"); if (fav){ e.stopPropagation(); toggleFav(fav.dataset.fav); return }
+  if (e.target.closest("[data-close]")){ closeModal(); return }
+  const sup = e.target.closest("[data-support]"); if (sup){ openSupport(sup.dataset.support); return }
+  const op = e.target.closest("[data-open]"); if (op){ const it = ITEMS.get(op.dataset.open); if (it) openItem(it) }
+});
+
+/* ===================== SCHEDULE ===================== */
+const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"], today = new Date(), order = [];
+for (let i=0;i<7;i++){ const d = new Date(today); d.setDate(today.getDate()+i); order.push(d) }
+$("#days").innerHTML = order.map((d,i)=>`<button class="day ${i===0?"on":""}" data-d="${dayNames[d.getDay()]}">${i===0?"Today":dayNames[d.getDay()]}<small>${d.toLocaleDateString("en-IN",{day:"numeric",month:"short"})}</small></button>`).join("");
+function renderSched(d){ $("#sched").innerHTML = schedule[d].map(s=>`<div class="slot"><time>${s[0]}</time><div><h4>${s[1]}</h4><p>${s[2]}</p></div></div>`).join("") }
+$("#days").addEventListener("click", e => { const b = e.target.closest(".day"); if (!b) return; document.querySelectorAll(".day").forEach(x=>x.classList.remove("on")); b.classList.add("on"); renderSched(b.dataset.d) });
+renderSched(dayNames[today.getDay()]);
+
+/* ===================== HERO SLIDER ===================== */
+let slide = 0;
+$("#heroDots").innerHTML = heroSlides.map((_,i)=>`<button class="${i===0?"on":""}" aria-label="Slide ${i+1}"></button>`).join("");
+function setSlide(i){
+  slide = i; const s = heroSlides[i];
+  $("#heroTitle").innerHTML = `${s.title}<span class="jp">${s.jp}</span>`;
+  $("#heroMeta").innerHTML = `<span><b>★ ${s.rating}</b></span><span>${/Movie/.test(s.eps)?"Movie":"TV Series"}</span><span>${s.eps}</span><span>${s.genre}</span><span>HD</span>`;
+  $("#heroDesc").textContent = s.desc;
+  $("#heroTag").textContent = `🔥 #${i+1} Spotlight`;
+  $("#heroBg").style.background = s.bg;
+  $("#heroWatch").dataset.open = s.id;
+  $("#heroFav").dataset.fav = s.id; $("#heroFav").textContent = favs.has(String(s.id)) ? "♥ In My List" : "＋ My List";
+  const hp = $("#heroPoster"); hp.classList.add("fade");
+  setTimeout(()=>{ $("#heroImg").src = s.img; $("#heroBlur").src = s.img; hp.classList.remove("fade") }, 250);
+  document.querySelectorAll("#heroDots button").forEach((b,j)=>b.classList.toggle("on", j===i));
+}
+$("#heroDots").addEventListener("click", e => { const i = [...document.querySelectorAll("#heroDots button")].indexOf(e.target); if (i>-1){ setSlide(i); restart() } });
+let timer; function restart(){ clearInterval(timer); timer = setInterval(()=>setSlide((slide+1)%heroSlides.length), 6000) }
+setSlide(0); restart();
+
+/* ===================== HEADER / MENU ===================== */
+window.addEventListener("scroll", () => {
+  $("#header").classList.toggle("scrolled", scrollY > 40);
+  let cur = "home";
+  document.querySelectorAll("section[id]").forEach(s => { if (scrollY >= s.offsetTop - 120) cur = s.id });
+  document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + cur));
+});
+$("#menuBtn").addEventListener("click", () => $("#menu").classList.toggle("open"));
+document.querySelectorAll("nav a").forEach(a => a.addEventListener("click", () => $("#menu").classList.remove("open")));
+
+/* ===================== REVEAL + COUNTERS ===================== */
+const fmt = n => n>=1e6 ? (n/1e6).toFixed(1)+"M+" : n>=1e3 ? Math.round(n/1e3)+"K+" : n+"+";
+const io = new IntersectionObserver(entries => entries.forEach(en => {
+  if (!en.isIntersecting) return;
+  en.target.classList.add("in");
+  const h = en.target.querySelector("[data-count]");
+  if (h && !h._done){ h._done = true; const end = +h.dataset.count; let st = null;
+    const step = t => { st = st||t; const p = Math.min((t-st)/1500,1); h.textContent = fmt(Math.floor(end*p)); if (p<1) requestAnimationFrame(step) }; requestAnimationFrame(step) }
+  io.unobserve(en.target);
+}), {threshold:.15});
+document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+/* ===================== FORM / START ===================== */
+$("#joinForm").addEventListener("submit", e => { e.preventDefault(); toast("🎉 Welcome to MOSI ANIME! Check your inbox."); e.target.reset() });
+$("#year").textContent = new Date().getFullYear();
+
+refreshStatuses();
+loadBrowse(true);
+initBackend();
+</script>
+</body>
+</html>
